@@ -4,6 +4,7 @@ define(function(require) {
         jqueryxdomainrequest = require('jquery.xdomainrequest'),
         moment = require("moment"),
         typeahead = require("typeahead"),
+        render = require('./render'),
         position_callback = require("./position_callback"),
         route_compare = require("./route_compare"),
         config = require("./config");
@@ -294,7 +295,7 @@ define(function(require) {
             $.getJSON("http://matka-aika.com/otp/routers/default/index/routes/" + suggestion.id + "/stops", function(data) {
                 $('.groupname').text("Linjan " + (suggestion.shortName || suggestion.longName) +
                 " lähimmät pysäkit");
-                render_stops(config.displayed_location[0], config.displayed_location[1], data, $('.favorites'), suggestion.shortName ||
+                render.render_stops(config.displayed_location[0], config.displayed_location[1], data, $('.favorites'), suggestion.shortName ||
                 suggestion.longName);
             });
         } else if (suggestion.time) {

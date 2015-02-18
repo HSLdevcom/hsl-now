@@ -3,6 +3,7 @@ define(function(require) {
         jqueryxdomainrequest = require('jquery.xdomainrequest'),
         L = require("leaflet"),
         config = require("./config"),
+        render = require('./render'),
         position_callback = require("./position_callback");
 
     if (!window.console)
@@ -65,7 +66,7 @@ define(function(require) {
     });
 
     config.displayed_location = [60.19909, 24.94042];
-    position_callback.render_stops("60.19909", "24.94042", favorites, $(".favorites"));
+    render.render_stops("60.19909", "24.94042", favorites, $(".favorites"));
 
     if (navigator && navigator.geolocation && navigator.geolocation.watchPosition) {
         navigator.geolocation.watchPosition(

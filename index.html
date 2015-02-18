@@ -129,14 +129,14 @@
               <!-- No dynamical functionality yet -->
               <big>
                   <div class="">
-                      <a href="javascript:source_location=null;$('.lahdot').text('');positionCallback({coords: {latitude: device_location[0], longitude: device_location[1]}});"><i>Laitteen paikantama sijainti</i></a>
+                      <a href="javascript:source_location=null;$('.lahdot').text('');position_callback.positionCallback({coords: {latitude: device_location[0], longitude: device_location[1]}});"><i>Laitteen paikantama sijainti</i></a>
                   </div>
                   <div>Aiemmat sijaintisi:</div>
                   <div class="">
-                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:source_location=null;positionCallback({coords: {latitude: 60.19909, longitude: 24.94042}});">Opastinsilta 6, Helsinki</a>
+                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:source_location=null;position_callback.positionCallback({coords: {latitude: 60.19909, longitude: 24.94042}});">Opastinsilta 6, Helsinki</a>
                   </div>
                   <div class="">
-                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:source_location=null;positionCallback({coords: {latitude: 60.22923, longitude: 24.96611}});">Oulunkylän tori, Helsinki</a>
+                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:source_location=null;position_callback.positionCallback({coords: {latitude: 60.22923, longitude: 24.96611}});">Oulunkylän tori, Helsinki</a>
                   </div>
               </big>
           </div>
@@ -150,11 +150,11 @@
       <!-- No dynamical functionality yet -->
       <big>
       <div class="">
-      <a href="javascript:render_favorites();"><i>Lähimmät suosikkisi</i></a>
+      <a href="javascript:favorites.render_favorites();"><i>Lähimmät suosikkisi</i></a>
       </div>
       <div>Tallentamasi koosteet:</div>
       <div class="">     
-      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:$('.groupname').text('Junat keskustasta');render_stops(displayed_location[0], displayed_location[1], mygroups['Junat keskustasta'], $('.favorites'));">Junat keskustasta</a>
+      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:$('.groupname').text('Junat keskustasta');render.render_stops(displayed_location[0], displayed_location[1], mygroups['Junat keskustasta'], $('.favorites'));">Junat keskustasta</a>
       </div>
       </big>
        </div>
@@ -207,7 +207,7 @@
             }
         });
         require(["hslnow", "disruptions", "search", "clock", "favorites",
-                 "position_callback"  // for render_stops and positionCallback both
+                 "position_callback", "render"
         ]);
     </script>
     <script> // XXX causes update loop: L_PREFER_CANVAS = true; </script>

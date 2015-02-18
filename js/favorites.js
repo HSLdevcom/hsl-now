@@ -1,5 +1,6 @@
 define(function(require) {
     var $ = require('jquery');
+        render = require('./render'),
         config = require('./config');
 
     mygroups = {
@@ -64,7 +65,7 @@ define(function(require) {
     // Used by index.html
     function render_favorites() {
         $('.groupname').text('Lähimmät suosikkisi');
-        render_stops(config.displayed_location[0], config.displayed_location[1], favorites, $('.favorites'));
+        render.render_stops(config.displayed_location[0], config.displayed_location[1], favorites, $('.favorites'));
     }
 
     function favorite_stop(stop) {
@@ -89,7 +90,6 @@ define(function(require) {
         }
     }
 
-    // Used by position_callback.js
     function render_stop_favorite(stop) {
         if (is_favorite_stop(stop.stopCode))
             return "<a class='favorite glyphicon glyphicon-star' href='javascript:unfavorite_stop(" + JSON.stringify(stop) +
