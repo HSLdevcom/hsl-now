@@ -1,3 +1,7 @@
+define(function(require) {
+var $ = require('jquery'),
+    jqueryxdomainrequest = require('jquery.xdomainrequest');
+
 $.getJSON('http://pubtrans.it/hsl/reittiopas/disruption-api', {}, function(data) {
 //    $.getJSON('http://pubtrans.it/hsl/reittiopas/disruption-api?dt=2014-10-14T17:44:22', {}, function(data) {
     var linetype2name = {
@@ -71,3 +75,4 @@ $.getJSON('http://pubtrans.it/hsl/reittiopas/disruption-api', {}, function(data)
         $(".disruptions .msgs").toggle();
     });
 });
+})

@@ -1,3 +1,11 @@
+define(function(require) {
+var $ = require('jquery'),
+    jqueryxdomainrequest = require('jquery.xdomainrequest'),
+    moment = require("moment"),
+    L = require("leaflet"),
+    geometryutil = require("geometryutil"),
+    favorites = require('./favorites'),
+    config = require('./config');
 // These functions are used by hslnow.js and typeahead.js
 
 // from leaflet geo/crs/CRS.Earth.js
@@ -63,12 +71,12 @@ function render_stops(lat, lon, stops, $elem, focus_route_name, time) {
     var route_id_seen = {};
     for (var i = 0; i < stops.length && i < 10; i++) { // >>
         var stop = stops[i];
-        $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + render_stop_favorite(stop) + stop.code + " " + stop.name +
+        $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + favorites.render_stop_favorite(stop) + stop.code + " " + stop.name +
         " <small>" + render_stop_angle([lat, lon], [stop.lat, stop.lon]) + " " + Math.ceil(stop.distance) + "m" +
         "</small>" +
         "</h4>");
         $elem.append("<small class='lahdotgroup lahdot-" + stop.id.replace(":", "_") + "'></small>");
-        $.getJSON(OTP_PATH + "/index/stops/" + stop.id + "/stoptimes", function(i, stop) {
+        $.getJSON(config.OTP_PATH + "/index/stops/" + stop.id + "/stoptimes", function(i, stop) {
             return function(data) {
                 data.sort(function(a, b){
                     return (a.times[0].serviceDay + a.times[0].realtimeDeparture - b.times[0].serviceDay - b.times[0].realtimeDeparture)});
@@ -90,7 +98,7 @@ function render_stops(lat, lon, stops, $elem, focus_route_name, time) {
                     "'></div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
                     "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-6 headsign-" +
                     entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div></div>");
-                    $.getJSON(OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
+                    $.getJSON(config.OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
                         return function(data) {
                             console.log(data);
                             if ("tripHeadsign" in data) {
@@ -152,11 +160,11 @@ function positionCallback(position, time) {
 
     var lat = position.coords.latitude.toPrecision(7);
     var lon = position.coords.longitude.toPrecision(7);
-    device_location = [position.coords.latitude, position.coords.longitude];
-    if (!source_location) {
-        source_location = device_location;
-        displayed_location = source_location;
-        $.getJSON(OTP_PATH + "/index/stops", {
+    config.device_location = [position.coords.latitude, position.coords.longitude];
+    if (!config.source_location) {
+        config.source_location = config.device_location;
+        config.displayed_location = config.source_location;
+        $.getJSON(config.OTP_PATH + "/index/stops", {
             lat: lat,
             lon: lon,
             radius: 1000
@@ -169,8 +177,11 @@ function positionCallback(position, time) {
         });
 
         $('.groupname').text('Lähimmät suosikkisi');
-        render_stops(lat, lon, favorites, $(".favorites"), "XXX", time);
+        render_stops(lat, lon, favorites.favorites, $(".favorites"), "XXX", time);
 
         window.map.setView([lat, lon], 15);
     }
 }
+return {'render_stops': render_stops,
+        'positionCallback': positionCallback};
+})

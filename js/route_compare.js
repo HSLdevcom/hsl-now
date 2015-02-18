@@ -1,5 +1,6 @@
 // Used by typeahead.js and disruptions.js
-function route_compare(a, b) {
+define(function(require) {
+return function route_compare(a, b) {
     var partsA = a.shortName.match(/^[A-Za-z]?(0*)([0-9]*)/);
     var partsB = b.shortName.match(/^[A-Za-z]?(0*)([0-9]*)/);
     if (partsA[1].length != partsB[1].length) {
@@ -16,3 +17,4 @@ function route_compare(a, b) {
     return numberA - numberB || (a.shortName || "").localeCompare(b.shortName || "") || (a.longName ||
         "").localeCompare(b.longName || "");
 }
+})

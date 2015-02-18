@@ -170,17 +170,47 @@
       </footer>
     </div> <!-- /container -->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.1/jquery.xdomainrequest.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min.js"></script>
+    <script src="js/require.js"></script>
+    <script>
+        require.config({
+            baseUrl: "js",
+            paths: {
+                "leaflet": "//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet",
+                "geometryutil": "//cdn.rawgit.com/makinacorpus/Leaflet.GeometryUtil/0f04b781f1320147bb363954787c20e95faad117/dist/leaflet.geometryutil", // XXX breaks IE8
+                "moment": "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min",
+                "bootstrap": ["//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min", "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min"],  // Example of failsafe loading from a mirror
+                "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min",
+                "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min",
+                "jquery.xdomainrequest": "//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.2/jquery.xdomainrequest.min",
+            },
+            config: {
+                moment: {
+                    noGlobal: true
+                }
+            },
+            shim: {
+                leaflet: {
+                    exports: 'L' // XXX Is this really needed?
+                },
+                jquery: {
+                    exports: '$'
+                },
+                geometryutil: {
+                    deps: ['leaflet']
+                },
+                bootstrap: {
+                    deps: ['jquery']
+                },
+                typeahead: {
+                    deps: ['jquery'],
+                },
+            }
+        });
+        require(["hslnow", "disruptions", "search", "clock", "favorites",
+                 "position_callback"  // for render_stops and positionCallback both
+        ]);
+    </script>
     <script> // XXX causes update loop: L_PREFER_CANVAS = true; </script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-    <script src="//cdn.rawgit.com/makinacorpus/Leaflet.GeometryUtil/0f04b781f1320147bb363954787c20e95faad117/dist/leaflet.geometryutil.js"></script> <!-- XXX breaks IE8 -->
-    <script src="js/hslnow.js"></script>
+
   </body>
 </html>

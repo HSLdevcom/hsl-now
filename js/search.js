@@ -1,7 +1,15 @@
-// These functions are not used by anything else
-
 // XXX no api method to search by stop code
+define(function(require) {
+var $ = require("jquery"),
+    jqueryxdomainrequest = require('jquery.xdomainrequest'),
+    moment = require("moment"),
+    typeahead = require("typeahead"),
+    position_callback = require("./position_callback"),
+    route_compare = require("./route_compare"),
+    config = require("./config");
 
+
+// These functions are not used by anything else
 function ajaxTransport(url, options, onSuccess, onError) {
     return $.ajax(url, options).done(done).fail(fail);
 
@@ -112,7 +120,7 @@ var routesByName = new Bloodhound({
         return route_compare(a, b);
     },
     prefetch: {
-        url: OTP_PATH + '/index/agencies/HSL/routes',
+        url: config.OTP_PATH + '/index/agencies/HSL/routes',
         filter: function(parsedResponse) {
             for (var i = 0; i < parsedResponse.length; i++) { // >
                 if (parseInt(parsedResponse[i].id, 10) === 1300) {
@@ -262,8 +270,8 @@ $(".tt-hint").addClass("form-control");
 
 $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
     if (suggestion.lat) {
-        source_location = null;
-        positionCallback({
+        config.source_location = null;
+        position_callback.positionCallback({
             coords: {
                 latitude: suggestion.lat,
                 longitude: suggestion.lng
@@ -274,8 +282,8 @@ $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
             reference: suggestion.reference
         }, function(data) {
             //                console.log(data);
-            source_location = null;
-            positionCallback({
+            config.source_location = null;
+            position_callback.positionCallback({
                 coords: {
                     latitude: data.result.geometry.location.lat,
                     longitude: data.result.geometry.location.lng
@@ -286,7 +294,7 @@ $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
         $.getJSON("http://matka-aika.com/otp/routers/default/index/routes/" + suggestion.id + "/stops", function(data) {
             $('.groupname').text("Linjan " + (suggestion.shortName || suggestion.longName) +
             " lähimmät pysäkit");
-            render_stops(displayed_location[0], displayed_location[1], data, $('.favorites'), suggestion.shortName ||
+            render_stops(config.displayed_location[0], config.displayed_location[1], data, $('.favorites'), suggestion.shortName ||
             suggestion.longName);
         });
     } else if (suggestion.time) {
@@ -297,11 +305,11 @@ $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
         } else {
             date = moment().add(60 * 60 * 24 * 1000).format("YYYY-MM-DD");
         }
-        source_location = null;
-        positionCallback({
+        config.source_location = null;
+        position_callback.positionCallback({
             coords: {
-                latitude: displayed_location[0],
-                longitude: displayed_location[1]
+                latitude: config.displayed_location[0],
+                longitude: config.displayed_location[1]
             }
         }, date + "T" + time);
     } else {
@@ -311,3 +319,4 @@ $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
 });
 
 $('.typeahead').typeahead('val', "");
+})

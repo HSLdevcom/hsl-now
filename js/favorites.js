@@ -1,3 +1,7 @@
+define(function(require) {
+var $ = require('jquery');
+    config = require('./config');
+
 mygroups = {
     "Junat keskustasta": [{
         id: "HSL:1020501",
@@ -60,7 +64,7 @@ function save_favorites() {
 // Used by index.html
 function render_favorites() {
     $('.groupname').text('Lähimmät suosikkisi');
-    render_stops(displayed_location[0], displayed_location[1], favorites, $('.favorites'));
+    render_stops(config.displayed_location[0], config.displayed_location[1], favorites, $('.favorites'));
 }
 
 function favorite_stop(stop) {
@@ -94,3 +98,6 @@ function render_stop_favorite(stop) {
         return "<a class='notfavorite glyphicon glyphicon-star-empty' href='javascript:favorite_stop(" + JSON.stringify(
                 stop) + ")'></a> ";
 }
+return {'favorites': favorites,
+        'render_stop_favorite': render_stop_favorite};
+})
