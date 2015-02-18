@@ -15,7 +15,7 @@
 
     <!-- link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet" -->
 
-    <link href="typeahead.css" rel="stylesheet">
+    <link href="css/typeahead.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -24,111 +24,14 @@
     <![endif]-->
 
     <link href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" rel="stylesheet">
-<style>
-body {
-  padding-top: 50px;
-  padding-bottom: 20px;
-}
-
-h3 {
-    color: #007ac9;
-}
-
-.lahdotgroup .row.odd {
-    background: #DFEDF5;
-}
-.lahdotgroup .row.header {
-    font-weight: bold;
-}
-.emphasis {
-    font-weight: bold;
-}
-.sidebar {
-    z-index: 50;
-    behavior: url(PIE.htc); /* IE lt 10 */
-    border-collapse: separate;
-    border: none;
-    margin-top: 7px;    
-}
-.btn-default {
-    behavior: url(PIE.htc); /* IE lt 10 */
-    position: relative;
-}
-.navbar button.pull-left {
-    border-color: black;
-    background: rgb(240, 146, 205);
-    color: white;
-}
-.navbar button.pull-right {
-    border-color: black;
-    color: white;
-    background: rgb(0, 185, 228);
-}
-.navbar-brand.btn:after {
-    content: attr(data-time);
-    padding-left: 7em;
-}
-
-.favorite, .notfavorite {
-    text-decoration: none;
-}
-
-.favorite:before, .notfavorite:hover:before {
-    color: rgb(240, 146, 205);
-//    content: "\2605";
-    text-decoration: none;
-//    display: inline-block;
-}
-
-.notfavorite:before, .favorite:hover:before {
-    color: rgb(240, 146, 205);
-//    content: "\2606";
-    text-decoration: none;
-//    display: inline-block;
-}
-
-.text-right {
-    padding-left: 0;
-}
-
-.twitter-typeahead {
-    width: 100%;
-}
-
-.tt-dataset-stops, .tt-dataset-routes, .tt-dataset-addresses {
-    max-height: 150px;
-    overflow-y: auto;
-}
-
-.typeahead {
-    behavior: url(PIE.htc); /* IE lt 10 */
-}
-
-.disruptions .linetype {
-    display: inline-block;
-}
-
-.leaflet-popup-content-wrapper {
-    behavior: url(PIE.htc); /* IE lt 10 */
-}
-
-.disruptions .linetype button {
-    background: solid white;
-}
-
-.msgs p {
-    margin-top: 15px;
-    margin-bottom: 0;
-}
-
-</style>
+    <link href="css/main.css" rel="stylesheet">
   </head>
 
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="background-color: #007ac9">
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
-        <div class="xxnavbar-header" style="text-align: center; max-height: 50px; overflow: hidden">
+        <div class="xxnavbar-header">
           <button onclick="$('.sidebar-left').animate({left: $('.sidebar-left').css('left').split(/px|%/)[0]<-20?'-6px':'-50%'}, 1000)" type="button" class="btn btn-default navbar-btn pull-left">
             <span class="glyphicon glyphicon-user"></span>
           </button>
@@ -141,20 +44,20 @@ h3 {
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button -->
-          <a class="navbar-brand btn timenow" href="" style="color: #fff; float: none; background-image: url('logo.png'); background-size: 100px auto; padding-left: 120px; background-position: center; background-repeat: no-repeat;"><span class="sr-only">HSL</span></a>
+          <a class="navbar-brand btn timenow" href=""><span class="sr-only">HSL</span></a>
         </div>
       </div>
     </div>
 
-    <div class="panel panel-default sidebar sidebar-left" style="position: fixed; width: 50%; left: -50%; height: 100%; overflow: hidden; box-shadow: 0px 0px 5px 5px rgba(240, 146, 205, 1.0); background: rgba(240, 146, 205, 1.0)">
+    <div class="panel panel-default sidebar sidebar-left">
         <div class="panel-heading">
              <h3 class="panel-title">Oma HSL</h3>
         </div>
-        <div class="list-group" style="min-height: 100%; background: white">
-        <a href="https://oma.reittiopas.fi/index.php?r=site/index&lang=fi" class="list-group-item">Reittisi</a>
-        <a href="https://oma.reittiopas.fi/index.php?r=site/stops&lang=fi" class="list-group-item">Pysäkkisi</a>
-        <a href="https://oma.reittiopas.fi/index.php?r=site/exception_info&lang=fi" class="list-group-item">Poikkeusinfosi</a>
-        <a href="https://oma.reittiopas.fi/index.php?r=user/edit&lang=fi" class="list-group-item">Omat tietosi</a>
+        <div class="list-group">
+        <a href="https://oma.reittiopas.fi/index.php?r=site/index&amp;lang=fi" class="list-group-item">Reittisi</a>
+        <a href="https://oma.reittiopas.fi/index.php?r=site/stops&amp;lang=fi" class="list-group-item">Pysäkkisi</a>
+        <a href="https://oma.reittiopas.fi/index.php?r=site/exception_info&amp;lang=fi" class="list-group-item">Poikkeusinfosi</a>
+        <a href="https://oma.reittiopas.fi/index.php?r=user/edit&amp;lang=fi" class="list-group-item">Omat tietosi</a>
         <a href="#" class="list-group-item">...</a>
         <a href="https://www.hsl.fi/user" class="list-group-item panel-footer">Kirjaudu</a>
         <a href="https://www.hsl.fi/user/register" class="list-group-item panel-footer">Rekisteröidy</a>
@@ -162,11 +65,11 @@ h3 {
         </div>
     </div>
 
-    <div class="panel panel-default sidebar sidebar-right" style="position: fixed; width: 50%; right: -50%; height: 100%; overflow: hidden; box-shadow: 0px 0px 5px 5px rgba(0, 185, 228, 1.0); background: rgba(0, 185, 228, 1.0)">
+    <div class="panel panel-default sidebar sidebar-right">
         <div class="panel-heading">
              <h3 class="panel-title">Helsingin seudun liikenne</h3>
         </div>
-        <div class="list-group" style="min-height: 100%; background: white">
+        <div class="list-group">
         <a href="https://www.hsl.fi/" class="list-group-item">Ajankohtaista</a>
         <a href="https://linjakartta.reittiopas.fi" class="list-group-item">Linjakartta</a>
         <a href="https://www.hsl.fi/reitit-ja-aikataulut" class="list-group-item">Reitit ja aikataulut</a>
@@ -184,14 +87,14 @@ h3 {
     </div>
 
     <!-- Main -->
-    <div class="jumbotron" style="padding: 0.5em 0; margin: 0; background: #dfedf5">
+    <div class="jumbotron">
       <div class="container disruptions"><!--
-       --><div class="linetype linetype-14"><button type="button" class="hide btn btn-default" style="border: 2px solid green; font-weight: bold; color: black; background: white"><span class="typename">Kaikki kulkumuodot</span><span class="lines"></span><span class="statusicon"></span></button></div><!--
-       --><div class="linetype linetype-other"><button type="button" class="btn btn-default" style="border: 2px solid green; font-weight: bold; color: #007ac9; background: white"><span class="typename">Bussit</span><span class="lines"></span><span class="statusicon"></span></button></div>
-          <div class="linetype linetype-2"><button type="button" class="btn btn-default" style="border: 2px solid green; font-weight: bold; color: #00985f; background: white"><span class="typename">Ratikat</span><span class="lines"></span><span class="statusicon"></span></button></div>
-          <div class="linetype linetype-12"><button type="button" class="btn btn-default" style="border: 2px solid green; font-weight: bold; color: #64be14; background: white"><span class="typename">Junat</span><span class="lines"></span><span class="statusicon"></span></button></div>
-          <div class="linetype linetype-6"><button type="button" class="btn btn-default" style="border: 2px solid green; font-weight: bold; color: #ff6319; background: white"><span class="typename">Metro</span><span class="lines"></span><span class="statusicon"></span></button></div>
-          <div class="linetype linetype-7"><button type="button" class="btn btn-default" style="border: 2px solid green; font-weight: bold; color: #00b9e4; background: white"><span class="typename">Lautat</span><span class="lines"></span><span class="statusicon"></span></button></div>
+       --><div class="linetype linetype-14"><button type="button" class="hide btn btn-default"><span class="typename">Kaikki kulkumuodot</span><span class="lines"></span><span class="statusicon"></span></button></div><!--
+       --><div class="linetype linetype-other"><button type="button" class="btn btn-default"><span class="typename">Bussit</span><span class="lines"></span><span class="statusicon"></span></button></div>
+          <div class="linetype linetype-2"><button type="button" class="btn btn-default"><span class="typename">Ratikat</span><span class="lines"></span><span class="statusicon"></span></button></div>
+          <div class="linetype linetype-12"><button type="button" class="btn btn-default"><span class="typename">Junat</span><span class="lines"></span><span class="statusicon"></span></button></div>
+          <div class="linetype linetype-6"><button type="button" class="btn btn-default"><span class="typename">Metro</span><span class="lines"></span><span class="statusicon"></span></button></div>
+          <div class="linetype linetype-7"><button type="button" class="btn btn-default"><span class="typename">Lautat</span><span class="lines"></span><span class="statusicon"></span></button></div>
           <div class="msgs"></div>
       </div>
       <div class="container">
@@ -199,7 +102,7 @@ h3 {
     </div>
     <div>
       <div class="container">
-          <form class="form-horizontal" role="form" style="padding-top: 20px">
+          <form class="form-horizontal" role="form">
               <div id="searchbox" class="input-group">
                   <input type="text" class="form-control typeahead" placeholder="Haku: esim. osoite, pysäkki, linja, aihe, kellonaika..." name="keywords">
                   <span class="input-group-btn">
@@ -209,7 +112,7 @@ h3 {
                   </span>
               </div>
           </form>
-      <div id="map" style="width: 100%; height: 3em; background: lightgrey; margin-top: 2em"></div>
+      <div id="map"></div>
       <div class="row">
        <div class="col-sm-5">
         <!-- div>
@@ -261,7 +164,7 @@ h3 {
       <hr>
 
       <footer>
-        <p>&copy; HSL 2014</p>
+        <p>&copy; HSL 2015</p>
       </footer>
     </div> <!-- /container -->
 
@@ -276,6 +179,6 @@ h3 {
     <script> // XXX causes update loop: L_PREFER_CANVAS = true; </script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
     <script src="//cdn.rawgit.com/makinacorpus/Leaflet.GeometryUtil/0f04b781f1320147bb363954787c20e95faad117/dist/leaflet.geometryutil.js"></script> <!-- XXX breaks IE8 -->
-    <script src="hslnow.js"></script>
+    <script src="js/hslnow.js"></script>
   </body>
 </html>

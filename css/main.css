@@ -1,0 +1,187 @@
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+h3 {
+    color: #007ac9;
+}
+
+.lahdotgroup .row.odd {
+    background: #DFEDF5;
+}
+.lahdotgroup .row.header {
+    font-weight: bold;
+}
+.emphasis {
+    font-weight: bold;
+}
+.sidebar {
+    z-index: 50;
+    behavior: url(PIE.htc); /* IE lt 10 */
+    border-collapse: separate;
+    border: none;
+    margin-top: 7px;
+}
+.btn-default {
+    behavior: url(PIE.htc); /* IE lt 10 */
+    position: relative;
+}
+
+.navbar {
+    background-color: #007ac9;
+}
+
+.xxnavbar-header {
+    text-align: center;
+    max-height: 50px;
+    overflow: hidden";
+}
+
+.navbar button.pull-left {
+    border-color: black;
+    background: rgb(240, 146, 205);
+    color: white;
+}
+.navbar button.pull-right {
+    border-color: black;
+    color: white;
+    background: rgb(0, 185, 228);
+}
+
+.navbar-brand {
+    color: #fff;
+    float: none;
+    background-image: url('logo.png');
+    background-size: 100px auto;
+    padding-left: 120px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.navbar-brand.btn:after {
+    content: attr(data-time);
+    padding-left: 7em;
+}
+
+.panel {
+    position: fixed;
+    width: 50%;
+    left: -50%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.sidebar-left {
+    box-shadow: 0px 0px 5px 5px rgba(240, 146, 205, 1.0);
+    background: rgba(240, 146, 205, 1.0);
+}
+
+.sidebar-right {
+    box-shadow: 0px 0px 5px 5px rgba(0, 185, 228, 1.0);
+    background: rgba(0, 185, 228, 1.0);
+}
+
+.list-group {
+    min-height: 100%;
+    background: white;
+}
+
+.jumbotron {
+    padding: 0.5em 0;
+    margin: 0;
+    background: #dfedf5;
+}
+
+.linetype {
+    border: 2px solid green;
+    font-weight: bold;
+    background: white;
+}
+
+.linetype-14 {
+    color: black;
+}
+
+.linetype-other {
+    color: #007ac9;
+}
+
+.linetype-2 {
+    color: #00985f;
+}
+
+.linetype-12 {
+    color: #64be14;
+}
+
+.linetype-6 {
+    color: #ff6319;
+}
+
+.linetype-7 {
+    color: #00b9e4;
+}
+
+.form-horizontal {
+    padding-top: 20px;
+}
+
+#map {
+    width: 100%;
+    height: 3em;
+    background: lightgrey;
+    margin-top: 2em;
+}
+
+.favorite, .notfavorite {
+    text-decoration: none;
+}
+
+.favorite:before, .notfavorite:hover:before {
+    color: rgb(240, 146, 205);
+//    content: "\2605";
+    text-decoration: none;
+//    display: inline-block;
+}
+
+.notfavorite:before, .favorite:hover:before {
+    color: rgb(240, 146, 205);
+//    content: "\2606";
+    text-decoration: none;
+//    display: inline-block;
+}
+
+.text-right {
+    padding-left: 0;
+}
+
+.twitter-typeahead {
+    width: 100%;
+}
+
+.tt-dataset-stops, .tt-dataset-routes, .tt-dataset-addresses {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.typeahead {
+    behavior: url(PIE.htc); /* IE lt 10 */
+}
+
+.disruptions .linetype {
+    display: inline-block;
+}
+
+.leaflet-popup-content-wrapper {
+    behavior: url(PIE.htc); /* IE lt 10 */
+}
+
+.disruptions .linetype button {
+    background: solid white;
+}
+
+.msgs p {
+    margin-top: 15px;
+    margin-bottom: 0;
+}
