@@ -12,46 +12,6 @@ displayed_location = null;
 source_location = null;
 device_location = null;
 
-// XXX Only used in one place
-function positionError(error) {
-    console.log("positionError", error);
-    if (!source_location) {
-        $('.lahdot').text('Paikannus epäonnistui: "' + error.message + '"');
-    }
-    /* on firefox, this re-fires every 10 seconds or so:
-     if (!source_location) {
-     positionCallback({coords: {latitude: 60.19909, longitude: 24.94042}});
-     source_location = null; // don't store the fake position
-     }
-     */
-}
-
-// XXX Unused
-function merge_stops(stops) {
-    var ret = [];
-    for (var i = 0; i < stops.length; i++) { // >
-        for (var j = 0; j < ret.length; j++) { // >
-            if (ret[j].stopCode === stops[i].stopCode) {
-                ret[j] = merge_stop(ret[j], stops[i]);
-            }
-        }
-        ret.push(stops[i]);
-    }
-
-}
-
-// XXX Unused except in unused function merge_stops
-function merge_stop(stop1, stop2) {
-    var stop = {
-        id: stop1.id,
-        stopCode: stop1.stopCode,
-        stopName: stop1.stopName,
-        stopLat: (stop1.stopLat + stop2.stopLat) / 2,
-        stopLon: (stop1.stopLon + stop2.stopLon) / 2
-    };
-    return stop;
-}
-
 window.map = map = L.map('map', {
     zoomControl: false,
     attributionControl: false
@@ -99,21 +59,22 @@ map.on('click', function(e) {
         console.log('resized');
         map.invalidateSize();
     });
-    //        map.invalidateSize();
 });
 
 displayed_location = [60.19909, 24.94042];
 render_stops("60.19909", "24.94042", favorites, $(".favorites"));
 
 if (navigator && navigator.geolocation && navigator.geolocation.watchPosition) {
-    navigator.geolocation.watchPosition(positionCallback, positionError, {
-        enableHighAccuracy: true,
-        timeout: 0xFFFFFFFF
-    });
-    //        navigator.geolocation.getCurrentPosition(positionCallback, positionError, {enableHighAccuracy: true});
+    navigator.geolocation.watchPosition(
+            positionCallback,
+            function(error) {
+                console.log("position error", error);
+                if (!source_location) {
+                    $('.lahdot').text('Paikannus epäonnistui: "' + error.message + '"');
+                }},
+            {enableHighAccuracy: true,
+             timeout: 0xFFFFFFFF});
 } else {
-    // kaarlenkatu:
-    //        positionCallback({coords: {latitude: 60.18606, longitude: 24.95025}});
     // hsl:
     positionCallback({
         coords: {
