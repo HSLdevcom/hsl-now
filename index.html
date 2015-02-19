@@ -174,12 +174,15 @@
     <script>
         require.config({
             baseUrl: "js",
+            bundles: {
+                'typeahead': ['bloodhound', 'typeahead.js'],
+            },
             paths: {
                 "leaflet": "//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet",
                 "geometryutil": "//cdn.rawgit.com/makinacorpus/Leaflet.GeometryUtil/0f04b781f1320147bb363954787c20e95faad117/dist/leaflet.geometryutil", // XXX breaks IE8
                 "moment": "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min",
-                "bootstrap": ["//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min", "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.2.0/js/bootstrap.min"],  // Example of failsafe loading from a mirror
-                "typeahead": "//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.10.4/typeahead.bundle.min",
+                "bootstrap": ["//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min", "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min"],  // Example of failsafe loading from a mirror
+                "typeahead": "typeahead.bundle",
                 "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min",
                 "jquery.xdomainrequest": "//cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.2/jquery.xdomainrequest.min",
             },
@@ -200,9 +203,6 @@
                 },
                 bootstrap: {
                     deps: ['jquery']
-                },
-                typeahead: {
-                    deps: ['jquery'],
                 },
             }
         });
