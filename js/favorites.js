@@ -105,7 +105,8 @@ define(function(require) {
                     stop) + ")'></a> ";
     }
     return {'favorites': favorites,
-            'render_favorite': render_favorite,
+            'render_stop_favorite': render_stop_favorite,
+            'render_favorites': render_favorites,
             'favorite_stop': favorite_stop,
             'unfavorite_stop': unfavorite_stop};
 })
