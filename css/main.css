@@ -52,7 +52,7 @@ h3 {
 .navbar-brand {
     color: #fff;
     float: none;
-    background-image: url('logo.png');
+    background-image: url('../logo.png');
     background-size: 100px auto;
     padding-left: 120px;
     background-position: center;
