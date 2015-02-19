@@ -75,9 +75,11 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
         var render_stop = [];
 
         var total_rows_rendered = 0;
+        var total_stops_rendered = 0;
 
         var route_id_seen = {};
-        for (var i = 0; i < stops.length && i < 10; i++) { // >>
+        for (var i = 0; i < stops.length && total_stops_rendered < 10; i++) { // >>
+            total_stops_rendered = 0;
             var stop = stops[i];
             $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + favorites.render_stop_favorite(stop) + stop.code + " " + stop.name +
             " <small>" + render_stop_angle([lat, lon], [stop.lat, stop.lon]) + " " + Math.ceil(stop.distance) + "m" +
@@ -124,36 +126,42 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                     var num_rendered = 0;
                     for (var j = 0; j < data.length; j++) { // >
                         var entry = data[j];
-                        var next_departure = "---"; // XXX maybe after fold?
-                        if (entry.times.length == 2)
-                            next_departure = renderTime(entry.times[1]) 
-                        if (total_rows_rendered === 0)
-                            $(".lahdot-" + stop.id.replace(":", "_")).append(
-                                "<div class='row header'><div class='col-xs-2 text-right'>Linja</div><div class='col-xs-4 text-right'>Seuraavat lähdöt</div><div class='col-xs-6'>Määränpää</div></div>"
-                            );
-                        $(".lahdot-" + stop.id.replace(":", "_")).append("<div class='row" + (num_rendered % 2 ? "" : " odd") +
-                        "'><div class='col-xs-2 text-right" + (entry.line === focus_route_name ? " emphasis" : "") + 
-                        " routenumber-" + entry.times[0].tripId.replace(":", "_").replace(" ", "_") + 
-                        "'></div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
-                        "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-6 headsign-" +
-                        entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div></div>");
-                        $.getJSON(config.OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
-                            return function(data) {
-                                //console.log(data);
-                                if ("tripHeadsign" in data) {
-                                    $(".headsign-" + trip).text(data.tripHeadsign);
-                                } else {
-                                    $(".headsign-" + trip).text(data.route.longName);
+                        var key = entry.pattern.id;
+                        if (!route_id_seen[key]) {
+                            var next_departure = "---"; // XXX maybe after fold?
+                            if (entry.times.length == 2)
+                                next_departure = renderTime(entry.times[1]) 
+                            if (total_rows_rendered === 0)
+                                $(".lahdot-" + stop.id.replace(":", "_")).append(
+                                    "<div class='row header'><div class='col-xs-2 text-right'>Linja</div><div class='col-xs-4 text-right'>Seuraavat lähdöt</div><div class='col-xs-6'>Määränpää</div></div>"
+                                );
+                            $(".lahdot-" + stop.id.replace(":", "_")).append("<div class='row" + (num_rendered % 2 ? "" : " odd") +
+                            "'><div class='col-xs-2 text-right" + (entry.line === focus_route_name ? " emphasis" : "") + 
+                            " routenumber-" + entry.times[0].tripId.replace(":", "_").replace(" ", "_") + 
+                            "'></div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
+                            "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-6 headsign-" +
+                            entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div></div>");
+                            $.getJSON(config.OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
+                                return function(data) {
+                                    //console.log(data);
+                                    if ("tripHeadsign" in data) {
+                                        $(".headsign-" + trip).text(data.tripHeadsign);
+                                    } else {
+                                        $(".headsign-" + trip).text(data.route.longName);
+                                    }
+                                    $(".routenumber-" + trip).text(data.route.shortName);
                                 }
-                                $(".routenumber-" + trip).text(data.route.shortName);
-                            }
-                        }(entry.times[0].tripId.replace(":", "_").replace(" ", "_")));
-                        num_rendered++;
-                        total_rows_rendered++;
+                            }(entry.times[0].tripId.replace(":", "_").replace(" ", "_")));
+                            route_id_seen[key] = true;
+                            num_rendered++;
+                            total_rows_rendered++;
+                        }
                     }
 
                     if (!num_rendered) {
                         $(".stop-" + stop.id.replace(":", "_")).hide();
+                    } else {
+                        total_stops_rendered++;
                     }
                 }
             }(i, stop);
