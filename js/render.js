@@ -86,8 +86,39 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
             $elem.append("<small class='lahdotgroup lahdot-" + stop.id.replace(":", "_") + "'></small>");
             $.getJSON(config.OTP_PATH + "/index/stops/" + stop.id + "/stoptimes", function(i, stop) {
                 return function(data) {
-                    data.sort(function(a, b){
-                        return (a.times[0].serviceDay + a.times[0].realtimeDeparture - b.times[0].serviceDay - b.times[0].realtimeDeparture)});
+                    results_for_stop[i] = data;
+                    for (var i2=0; i2<i; i2++) {
+                        if (!results_for_stop[i2])
+                            return; // earlier stop needs to be handled first
+                    }
+                    for (var i2=i; i2<results_for_stop.length; i2++) { // >
+                        if (!results_for_stop[i2])
+                            return; // we're done for now
+                        var skipThis = false;
+                        for (var i3=i2+1; i3<stops.length && i3<10; i3++) { // >>
+                            if (stops[i3].code === stops[i2].code) {
+                                skipThis = true; // more departures for the same code arriving later
+                            }
+                        }
+                        if (skipThis) continue;
+                        var results_of_code = [];
+                        for (var i3=0; i3<=i2; i3++) { // >
+                            if (stops[i3].code === stops[i2].code) {
+                                Array.prototype.push.apply(results_of_code, results_for_stop[i3]);
+                                if (i3 !== i2)
+                                    $(".stop-"+stops[i3].id.replace(":", "_")).hide(); // hide all but the last duplicate
+                            }
+                        }
+                        results_of_code.sort(function(a, b){
+                            return (a.times[0].serviceDay + a.times[0].realtimeDeparture - b.times[0].serviceDay - b.times[0].realtimeDeparture)
+                        });
+                        render_stop[i2](results_of_code);
+                    }
+                }
+            }(i, stop));
+
+            render_stop[i] = function(i, stop) {
+                return function(data) {
                     //console.log("rendering", stop.id, data);
                     $(".lahdot-" + stop.id.replace(":", "_")).text("");
                     var num_rendered = 0;
@@ -121,11 +152,11 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                         total_rows_rendered++;
                     }
 
-                    if (!num_rendered)
+                    if (!num_rendered) {
                         $(".stop-" + stop.id.replace(":", "_")).hide();
-
+                    }
                 }
-            }(i, stop));
+            }(i, stop);
         }
     }
 })
