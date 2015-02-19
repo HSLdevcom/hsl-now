@@ -88,7 +88,7 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                 return function(data) {
                     data.sort(function(a, b){
                         return (a.times[0].serviceDay + a.times[0].realtimeDeparture - b.times[0].serviceDay - b.times[0].realtimeDeparture)});
-                    console.log("rendering", stop.id, data);
+                    //console.log("rendering", stop.id, data);
                     $(".lahdot-" + stop.id.replace(":", "_")).text("");
                     var num_rendered = 0;
                     for (var j = 0; j < data.length; j++) { // >
@@ -108,7 +108,7 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                         entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div></div>");
                         $.getJSON(config.OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
                             return function(data) {
-                                console.log(data);
+                                //console.log(data);
                                 if ("tripHeadsign" in data) {
                                     $(".headsign-" + trip).text(data.tripHeadsign);
                                 } else {
