@@ -93,33 +93,33 @@ h3 {
     background: #dfedf5;
 }
 
-.linetype {
+.linetype button {
     border: 2px solid green;
     font-weight: bold;
     background: white;
 }
 
-.linetype-14 {
+.linetype-14 button {
     color: black;
 }
 
-.linetype-other {
+.linetype-other button {
     color: #007ac9;
 }
 
-.linetype-2 {
+.linetype-2 button {
     color: #00985f;
 }
 
-.linetype-12 {
+.linetype-12 button {
     color: #64be14;
 }
 
-.linetype-6 {
+.linetype-6 button {
     color: #ff6319;
 }
 
-.linetype-7 {
+.linetype-7 button {
     color: #00b9e4;
 }
 
