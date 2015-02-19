@@ -45,9 +45,9 @@ define(function(require) {
         var map = {
             "0": ["raitiovaunu", "ratikka", "spora", "spåra", "hkl", "raideliikenne"],
             "1": ["metro", "maanalainen", "hkl", "raideliikenne", "runkolinja"],
-            "3": ["bussi", "dösä", "linja-auto"],
+            "3": ["bussi", "dösä", "linja-auto", "linkki", "nysse"],
             "4": ["lautta"],
-            "109": ["juna", "lähijuna", "vr-juna", "raideliikenne", "runkolinja"]
+            "109": ["juna", "lähijuna", "vr-juna", "raideliikenne", "runkolinja", "josse"]
         };
         return map[type];
     }
