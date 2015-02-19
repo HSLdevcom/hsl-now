@@ -3,7 +3,8 @@ define(function(require) {
     var $ = require("jquery"),
         jqueryxdomainrequest = require('jquery.xdomainrequest'),
         moment = require("moment"),
-        typeahead = require("typeahead"),
+        Bloodhound = require("bloodhound"),
+        typeaheadjs = require("typeahead.js"),
         render = require('./render'),
         position_callback = require("./position_callback"),
         route_compare = require("./route_compare"),
@@ -11,8 +12,8 @@ define(function(require) {
 
 
     // These functions are not used by anything else
-    function ajaxTransport(url, options, onSuccess, onError) {
-        return $.ajax(url, options).done(done).fail(fail);
+    function ajaxTransport(options, onSuccess, onError) {
+        return $.ajax(options).done(done).fail(fail);
 
         function done(data, textStatus, request) {
             onSuccess(data);
@@ -24,13 +25,14 @@ define(function(require) {
     }
 
     function createRegexGuardedTransport(baseurl, regex) {
-        return function(url, options, onSuccess, onError) {
-            url = url.replace(/^[^:]*:/, "");
+        return function(options, onSuccess, onError) {
+            options.url = options.url.replace(/^[^:]*:/, "");
             var query = decodeURIComponent(url);
             if (query.match(regex)) {
+                options.url = baseurl.replace("%QUERY", options.url);
                 //            console.log("match", query);
                 //            console.log(baseurl, baseurl.replace("%QUERY", url));
-                ajaxTransport(baseurl.replace("%QUERY", url), options, onSuccess, onError);
+                ajaxTransport(options, onSuccess, onError);
             } else {
                 //            console.log("non-match", query);
                 // XXX onSuccess({}) here would fail a filter and jam requests past 6th:
@@ -63,6 +65,7 @@ define(function(require) {
         },
         remote: {
             url: "stopsByName:%QUERY",
+            wildcard: "%QUERY",
             filter: function(parsedResponse) {
                 //                console.log("stopsByName parsedResponse", parsedResponse);
                 return parsedResponse
@@ -147,6 +150,7 @@ define(function(require) {
         },
         remote: {
             url: 'addressesByName:%QUERY',
+            wildcard: '%QUERY',
             filter: function(parsedResponse) {
                 //                console.log("addressesByName parsedResponse", parsedResponse);
                 var res = [];
@@ -174,8 +178,9 @@ define(function(require) {
         },
         remote: {
             url: 'timeByTime:%QUERY',
-            transport: function(url, options, onSuccess, onError) {
-                url = url.replace(/^[^:]*:/, "");
+            wildcard: '%QUERY',
+            transport: function(options, onSuccess, onError) {
+                url = options.url.replace(/^[^:]*:/, "");
                 var query = decodeURIComponent(url);
                 if (query.match(/[0-9][0-9][:.][0-9][0-9]/)) {
                     setTimeout(function() {
