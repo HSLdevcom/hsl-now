@@ -50,8 +50,11 @@ define(function(require) {
     }
 
     function is_favorite_stop(code) {
+        if (code == undefined) {
+            return false;
+        }
         for (var i = 0; i < favorites.length; i++) {
-            if (favorites[i].stopCode === code)
+            if (favorites[i].code === code)
                 return true;
         }
         return false;
@@ -69,7 +72,10 @@ define(function(require) {
     }
 
     function favorite_stop(stop) {
-        if (!is_favorite_stop(stop.stopCode)) {
+        if (stop.code == undefined) {
+            return;
+        }
+        if (!is_favorite_stop(stop.code)) {
             favorites.push(stop);
             save_favorites();
             render_favorites();
@@ -79,8 +85,8 @@ define(function(require) {
     function unfavorite_stop(stop) {
         for (i = 0; i < favorites.length; i++) { // >
             // remove continuous stops with same code:
-            if (favorites[i].stopCode === stop.stopCode) {
-                while (i < favorites.length && favorites[i].stopCode === stop.stopCode) { // >
+            if (favorites[i].code === stop.code) {
+                while (i < favorites.length && favorites[i].code === stop.code) { // >
                     favorites.splice(i, 1);
                 }
                 save_favorites();
@@ -91,7 +97,7 @@ define(function(require) {
     }
 
     function render_stop_favorite(stop) {
-        if (is_favorite_stop(stop.stopCode))
+        if (is_favorite_stop(stop.code))
             return "<a class='favorite glyphicon glyphicon-star' href='javascript:unfavorite_stop(" + JSON.stringify(stop) +
                 ")'></a> ";
         else
