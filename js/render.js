@@ -91,7 +91,7 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
             "</small>" +
             "</h4>");
             $elem.append("<small class='lahdotgroup lahdot-" + stop.id.replace(":", "_") + "'></small>");
-            $.getJSON(config.OTP_PATH + "/index/stops/" + stop.id + "/stoptimes", function(i, stop) {
+            $.getJSON(config.OTP_PATH + "/index/stops/" + stop.id + "/stoptimes?detail=true", function(i, stop) {
                 return function(data) {
                     results_for_stop[i] = data;
                     for (var i2=0; i2<i; i2++) {
@@ -131,33 +131,32 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                     var num_rendered = 0;
                     for (var j = 0; j < data.length; j++) { // >
                         var entry = data[j];
+                        for (var j2 = j+1; j2 < data.length; j2++) {
+                            console.log(data[j2].pattern.direction);
+                            if (data[j2].pattern.shortName === entry.pattern.shortName && data[j2].pattern.direction ? data[j2].pattern.direction === entry.pattern.direction : data[j2].pattern.longName === entry.pattern.longName) {
+                                Array.prototype.push.apply(entry.times, data[j2]);
+                                route_id_seen[data[j2].pattern.id] = true;
+                            }
+                        }
+                        entry.times.sort(function(a, b){
+                            return (a.serviceDay + a.realtimeDeparture - b.serviceDay - b.realtimeDeparture)
+                        });
                         var key = entry.pattern.id;
                         if (!route_id_seen[key]) {
                             var next_departure = "---"; // XXX maybe after fold?
-                            if (entry.times.length == 2)
+                            if (entry.times.length > 1)
                                 next_departure = renderTime(entry.times[1]) 
                             if (total_rows_rendered === 0)
                                 $(".lahdot-" + stop.id.replace(":", "_")).append(
                                     "<div class='row header'><div class='col-xs-2 text-right'>Linja</div><div class='col-xs-4 text-right'>Seuraavat lähdöt</div><div class='col-xs-4'>Määränpää</div><div class='col-xs-2'>Pysäkki</div></div>"
                                 );
+                            var route = entry.pattern.shortName ? entry.pattern.shortName : "";
+                            var direction = entry.pattern.direction ? entry.pattern.direction : entry.pattern.longName.replace(/^.*--/, "");
                             $(".lahdot-" + stop.id.replace(":", "_")).append("<div class='row" + (num_rendered % 2 ? "" : " odd") +
-                            "'><div class='col-xs-2 text-right" + (entry.line === focus_route_name ? " emphasis" : "") + 
-                            " routenumber-" + entry.times[0].tripId.replace(":", "_").replace(" ", "_") + 
-                            "'></div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
-                            "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-4 headsign-" +
-                            entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div><div class='col-xs-2 stop-" +
-                            entry.times[0].stopId + "'>" + stopCodes[entry.times[0].stopId] + "</div></div>");
-                            $.getJSON(config.OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
-                                return function(data) {
-                                    //console.log(data);
-                                    if ("tripHeadsign" in data) {
-                                        $(".headsign-" + trip).text(data.tripHeadsign);
-                                    } else {
-                                        $(".headsign-" + trip).text(data.route.longName);
-                                    }
-                                    $(".routenumber-" + trip).text(data.route.shortName);
-                                }
-                            }(entry.times[0].tripId.replace(":", "_").replace(" ", "_")));
+                            "'><div class='col-xs-2 text-right" + (route === focus_route_name ? " emphasis" : "") + 
+                            "'>" + route + "</div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
+                            "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-4'>" +
+                            direction + "</div><div class='col-xs-2'>" + (stopCodes[entry.times[0].stopId] || "") + "</div></div>");
                             route_id_seen[key] = true;
                             num_rendered++;
                             total_rows_rendered++;
