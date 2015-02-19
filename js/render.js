@@ -78,10 +78,10 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
         var total_stops_rendered = 0;
 
         var route_id_seen = {};
-        for (var i = 0; i < stops.length && total_stops_rendered < 10; i++) { // >>
+        for (var i = 0; i < stops.length && i < 10; i++) { // >>
             total_stops_rendered = 0;
             var stop = stops[i];
-            $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + favorites.render_stop_favorite(stop) + stop.code + " " + stop.name +
+            $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + favorites.render_stop_favorite(stop) + " " + stop.name +
             " <small>" + render_stop_angle([lat, lon], [stop.lat, stop.lon]) + " " + Math.ceil(stop.distance) + "m" +
             "</small>" +
             "</h4>");
@@ -98,14 +98,14 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                             return; // we're done for now
                         var skipThis = false;
                         for (var i3=i2+1; i3<stops.length && i3<10; i3++) { // >>
-                            if (stops[i3].code === stops[i2].code) {
+                            if (stops[i3].name === stops[i2].name) {
                                 skipThis = true; // more departures for the same code arriving later
                             }
                         }
                         if (skipThis) continue;
                         var results_of_code = [];
                         for (var i3=0; i3<=i2; i3++) { // >
-                            if (stops[i3].code === stops[i2].code) {
+                            if (stops[i3].name === stops[i2].name) {
                                 Array.prototype.push.apply(results_of_code, results_for_stop[i3]);
                                 if (i3 !== i2)
                                     $(".stop-"+stops[i3].id.replace(":", "_")).hide(); // hide all but the last duplicate
