@@ -133,10 +133,10 @@
                   </div>
                   <div>Aiemmat sijaintisi:</div>
                   <div class="">
-                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:source_location=null;position_callback.positionCallback({coords: {latitude: 60.19909, longitude: 24.94042}});">Opastinsilta 6, Helsinki</a>
+                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:config.source_location=null;position_callback.positionCallback({coords: {latitude: 60.19909, longitude: 24.94042}});">Opastinsilta 6, Helsinki</a>
                   </div>
                   <div class="">
-                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:source_location=null;position_callback.positionCallback({coords: {latitude: 60.22923, longitude: 24.96611}});">Oulunkylän tori, Helsinki</a>
+                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:config.source_location=null;position_callback.positionCallback({coords: {latitude: 60.22923, longitude: 24.96611}});">Oulunkylän tori, Helsinki</a>
                   </div>
               </big>
           </div>
@@ -211,6 +211,9 @@
         ]);
         //Needed for inline javascript
         require(["favorites"], function(data) {favorites=data;});
+        require(["position_callback"], function(data) {position_callback=data;});
+        require(["config"], function(data) {config=data;});
+
     </script>
     <script> // XXX causes update loop: L_PREFER_CANVAS = true; </script>
 

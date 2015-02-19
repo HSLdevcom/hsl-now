@@ -54,10 +54,14 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
         console.log("Starting render at", [lat, lon, time]);
 
         stops = removeDuplicateStops(stops);
+        var stopCodes = {};
 
-        // calculate distances to stops and sort by distance
+        // calculate distances to stops and sort by distance and put their codes into stopCodes (needed later on)
         for (var i = 0; i < stops.length; i++) { // >
             var stop = stops[i];
+            if (stop.code) {
+                stopCodes[stop.id] = stop.code;
+            }
             if ("dist" in stop) {
                 stop.distance = stop.dist;
             } else {
@@ -70,6 +74,7 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
         stops.sort(function(a, b) {
             return a.distance - b.distance;
         });
+
 
         var results_for_stop = [];
         var render_stop = [];
@@ -133,14 +138,15 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                                 next_departure = renderTime(entry.times[1]) 
                             if (total_rows_rendered === 0)
                                 $(".lahdot-" + stop.id.replace(":", "_")).append(
-                                    "<div class='row header'><div class='col-xs-2 text-right'>Linja</div><div class='col-xs-4 text-right'>Seuraavat lähdöt</div><div class='col-xs-6'>Määränpää</div></div>"
+                                    "<div class='row header'><div class='col-xs-2 text-right'>Linja</div><div class='col-xs-4 text-right'>Seuraavat lähdöt</div><div class='col-xs-4'>Määränpää</div><div class='col-xs-2'>Pysäkki</div></div>"
                                 );
                             $(".lahdot-" + stop.id.replace(":", "_")).append("<div class='row" + (num_rendered % 2 ? "" : " odd") +
                             "'><div class='col-xs-2 text-right" + (entry.line === focus_route_name ? " emphasis" : "") + 
                             " routenumber-" + entry.times[0].tripId.replace(":", "_").replace(" ", "_") + 
                             "'></div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
-                            "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-6 headsign-" +
-                            entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div></div>");
+                            "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-4 headsign-" +
+                            entry.times[0].tripId.replace(":", "_").replace(" ", "_") + "'></div><div class='col-xs-2 stop-" +
+                            entry.times[0].stopId + "'>" + stopCodes[entry.times[0].stopId] + "</div></div>");
                             $.getJSON(config.OTP_PATH + "/index/trips/" + entry.times[0].tripId, function (trip) {
                                 return function(data) {
                                     //console.log(data);

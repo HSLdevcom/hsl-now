@@ -40,12 +40,13 @@ define(function(require) {
                 stopLayer.removeLayer(l);
             });
             for (var i = 0; i < resp.length; i++) {
-                 var stop = resp[i];
-                 var marker = L.circleMarker([stop.lat, stop.lon]);
-                 marker.addTo(stopLayer);
-                 marker.bindPopup(
-                     '<iframe style="border: 0" frameBorder="0" src="http://hsl.seasam.com/omatpysakit/mobile?command=stop&id=' +
-                     stop.id + '&lang=1"></iframe>');
+                var stop = resp[i];
+                var marker = L.circleMarker([stop.lat, stop.lon]);
+                marker.addTo(stopLayer);
+                marker.on('click', function(e) {
+                    config.source_location=null;
+                    position_callback.positionCallback({coords: {latitude: e.latlng.lat, longitude: e.latlng.lng}});
+                });
             }
             map.addLayer(stopLayer);
         });

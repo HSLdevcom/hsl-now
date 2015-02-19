@@ -141,7 +141,7 @@ define(function(require) {
 
     var addressesByName = new Bloodhound({
         datumTokenizer: function(d) {
-            return Bloodhound.tokenizers.whitespace(d.stopName).concat([d.stopCode]);
+            return Bloodhound.tokenizers.whitespace(d.name).concat([d.code]);
         },
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         limit: 100,
