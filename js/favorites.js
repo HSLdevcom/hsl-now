@@ -1,9 +1,9 @@
 define(function(require) {
-    var $ = require('jquery');
+    var $ = require('jquery'),
         render = require('./render'),
         config = require('./config');
 
-    mygroups = {
+    var mygroups = {
         "Junat keskustasta": [{
             id: "HSL:1020501",
             code: "0070",
@@ -18,7 +18,7 @@ define(function(require) {
             lon: 24.93991
         }]
     };
-    favorites = [{
+    var favorites = [{
         id: "HSL:1240109",
         code: "2429",
         name: "Pyöräilystadion",
@@ -98,12 +98,14 @@ define(function(require) {
 
     function render_stop_favorite(stop) {
         if (is_favorite_stop(stop.code))
-            return "<a class='favorite glyphicon glyphicon-star' href='javascript:unfavorite_stop(" + JSON.stringify(stop) +
+            return "<a class='favorite glyphicon glyphicon-star' href='javascript:favorites.unfavorite_stop(" + JSON.stringify(stop) +
                 ")'></a> ";
         else
-            return "<a class='notfavorite glyphicon glyphicon-star-empty' href='javascript:favorite_stop(" + JSON.stringify(
+            return "<a class='notfavorite glyphicon glyphicon-star-empty' href='javascript:favorites.favorite_stop(" + JSON.stringify(
                     stop) + ")'></a> ";
     }
     return {'favorites': favorites,
-            'render_stop_favorite': render_stop_favorite};
+            'render_stop_favorite': render_stop_favorite,
+            'favorite_stop': favorite_stop,
+            'unfavorite_stop': unfavorite_stop};
 })

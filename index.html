@@ -209,6 +209,8 @@
         require(["hslnow", "disruptions", "search", "clock", "favorites",
                  "position_callback", "render"
         ]);
+        //Needed for inline javascript
+        require(["favorites"], function(data) {favorites=data;});
     </script>
     <script> // XXX causes update loop: L_PREFER_CANVAS = true; </script>
 

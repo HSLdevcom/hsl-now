@@ -4,6 +4,7 @@ define(function(require) {
         L = require("leaflet"),
         config = require("./config"),
         render = require('./render'),
+        favorites = require('./favorites'),
         position_callback = require("./position_callback");
 
     if (!window.console)
