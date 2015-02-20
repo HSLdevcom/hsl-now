@@ -103,14 +103,14 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                             return; // we're done for now
                         var skipThis = false;
                         for (var i3=i2+1; i3<stops.length && i3<10; i3++) { // >>
-                            if (stops[i3].name === stops[i2].name) {
+                            if (stops[i3].name.replace(/\W/g, '').toLowerCase() === stops[i2].name.replace(/\W/g, '').toLowerCase()) {
                                 skipThis = true; // more departures for the same code arriving later
                             }
                         }
                         if (skipThis) continue;
                         var results_of_code = [];
                         for (var i3=0; i3<=i2; i3++) { // >
-                            if (stops[i3].name === stops[i2].name) {
+                            if (stops[i3].name.replace(/\W/g, '').toLowerCase() === stops[i2].name.replace(/\W/g, '').toLowerCase()) {
                                 Array.prototype.push.apply(results_of_code, results_for_stop[i3]);
                                 if (i3 !== i2)
                                     $(".stop-"+stops[i3].id.replace(":", "_")).hide(); // hide all but the last duplicate
