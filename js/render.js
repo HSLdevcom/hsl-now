@@ -133,7 +133,9 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                         var entry = data[j];
                         for (var j2 = j+1; j2 < data.length; j2++) {
                             console.log(data[j2].pattern.direction);
-                            if (data[j2].pattern.shortName === entry.pattern.shortName && data[j2].pattern.direction ? data[j2].pattern.direction === entry.pattern.direction : data[j2].pattern.longName === entry.pattern.longName) {
+                            if (data[j2].pattern.shortName === entry.pattern.shortName && 
+                                data[j2].pattern.direction ? data[j2].pattern.direction === entry.pattern.direction : 
+                                data[j2].pattern.longName.replace(/^.*--/, "") === entry.pattern.longName.replace(/^.*--/, "")) {
                                 Array.prototype.push.apply(entry.times, data[j2]);
                                 route_id_seen[data[j2].pattern.id] = true;
                             }
