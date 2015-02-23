@@ -87,7 +87,9 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
             total_stops_rendered = 0;
             var stop = stops[i];
             $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + favorites.render_stop_favorite(stop) + " " + stop.name +
-            " <small>" + render_stop_angle([lat, lon], [stop.lat, stop.lon]) + " " + Math.ceil(stop.distance) + "m" +
+            ' <div class="btn-group"><button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span></button>' +
+            '<button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div> <small>' +
+            render_stop_angle([lat, lon], [stop.lat, stop.lon]) + " " + Math.ceil(stop.distance) + "m" +
             "</small>" +
             "</h4>");
             $elem.append("<small class='lahdotgroup lahdot-" + stop.id.replace(":", "_") + "'></small>");
@@ -132,7 +134,6 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                     for (var j = 0; j < data.length; j++) { // >
                         var entry = data[j];
                         for (var j2 = j+1; j2 < data.length; j2++) {
-                            console.log(data[j2].pattern.direction);
                             if (data[j2].pattern.shortName === entry.pattern.shortName && 
                                 data[j2].pattern.direction ? data[j2].pattern.direction === entry.pattern.direction : 
                                 data[j2].pattern.longName.replace(/^.*--/, "") === entry.pattern.longName.replace(/^.*--/, "")) {

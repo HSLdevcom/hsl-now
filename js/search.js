@@ -229,7 +229,11 @@ define(function(require) {
     $('.typeahead').typeahead({
         highlight: true,
         hint: true,
-        minLength: 1
+        minLength: 1,
+        classNames: {
+            suggestion: "tt-selection",
+            dataset: "tt-dataset"
+        }
     }, {
         name: 'time',
         displayKey: 'time',
@@ -247,7 +251,9 @@ define(function(require) {
         templates: {
             header: "<h3 class='panel-title'>Pysäkit</h3>",
             suggestion: function(datum) {
-                return "<p>" + datum.description + "</p>"
+                return '<div><div class="btn-group"><button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span></button>' +
+                        '<button class="btn btn-default">' + datum.description + '</button>' +
+                        '<button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div></div>'
             }
         }
     }, {
@@ -277,7 +283,7 @@ define(function(require) {
     $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
         if (suggestion.lat) {
             config.source_location = null;
-            position_callback.positionCallback({
+            position_callback.positionCallbackFromDisplayedLocation({
                 coords: {
                     latitude: suggestion.lat,
                     longitude: suggestion.lng
@@ -289,7 +295,7 @@ define(function(require) {
             }, function(data) {
                 //                console.log(data);
                 config.source_location = null;
-                position_callback.positionCallback({
+                position_callback.positionCallbackFromDisplayedLocation({
                     coords: {
                         latitude: data.result.geometry.location.lat,
                         longitude: data.result.geometry.location.lng
@@ -311,13 +317,7 @@ define(function(require) {
             } else {
                 date = moment().add(60 * 60 * 24 * 1000).format("YYYY-MM-DD");
             }
-            config.source_location = null;
-            position_callback.positionCallback({
-                coords: {
-                    latitude: config.displayed_location[0],
-                    longitude: config.displayed_location[1]
-                }
-            }, date + "T" + time);
+            config.search_time = moment(date + "T" + time);
         } else {
             return;
         }

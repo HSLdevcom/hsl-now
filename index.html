@@ -100,6 +100,15 @@
       <div class="container">
       </div>
     </div>
+    <div class="container">
+      <div id="search-options" class="input-group">
+        <form class="form-horizontal" role="form">
+        <button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;<span id="search-options-from">Lähtöpaikka</span></button>
+        <button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;<span id="search-options-time"></span></button>
+        <button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;<span id="search-options-to">Aseta määränpää hakemalla</span></button>
+        </form>
+      </div>
+    </div>
     <div>
       <div class="container">
           <form class="form-horizontal" role="form">
@@ -129,14 +138,14 @@
               <!-- No dynamical functionality yet -->
               <big>
                   <div class="">
-                      <a href="javascript:source_location=null;$('.lahdot').text('');position_callback.positionCallback({coords: {latitude: device_location[0], longitude: device_location[1]}});"><i>Laitteen paikantama sijainti</i></a>
+                      <a href="javascript:$('.lahdot').text('');position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: device_location[0], longitude: device_location[1]}});"><i>Laitteen paikantama sijainti</i></a>
                   </div>
                   <div>Aiemmat sijaintisi:</div>
                   <div class="">
-                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:config.source_location=null;position_callback.positionCallback({coords: {latitude: 60.19909, longitude: 24.94042}});">Opastinsilta 6, Helsinki</a>
+                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: 60.19909, longitude: 24.94042}});">Opastinsilta 6, Helsinki</a>
                   </div>
                   <div class="">
-                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:config.source_location=null;position_callback.positionCallback({coords: {latitude: 60.22923, longitude: 24.96611}});">Oulunkylän tori, Helsinki</a>
+                      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: 60.22923, longitude: 24.96611}});">Oulunkylän tori, Helsinki</a>
                   </div>
               </big>
           </div>

@@ -44,8 +44,7 @@ define(function(require) {
                 var marker = L.circleMarker([stop.lat, stop.lon]);
                 marker.addTo(stopLayer);
                 marker.on('click', function(e) {
-                    config.source_location=null;
-                    position_callback.positionCallback({coords: {latitude: e.latlng.lat, longitude: e.latlng.lng}});
+                    position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: e.latlng.lat, longitude: e.latlng.lng}});
                 });
             }
             map.addLayer(stopLayer);
@@ -72,17 +71,17 @@ define(function(require) {
 
     if (navigator && navigator.geolocation && navigator.geolocation.watchPosition) {
         navigator.geolocation.watchPosition(
-                position_callback.positionCallback,
+                position_callback.positionCallbackFromGeolocation,
                 function(error) {
                     console.log("position error", error);
-                    if (!config.source_location) {
+                    if (!config.device_location) {
                         $('.lahdot').text('Paikannus epäonnistui: "' + error.message + '"');
                     }},
                 {enableHighAccuracy: true,
                  timeout: 0xFFFFFFFF});
     } else {
         // hsl:
-        position_callback.positionCallback({
+        position_callback.positionCallbackFromDisplayedLocation({
             coords: {
                 latitude: 60.19909,
                 longitude: 24.94042
