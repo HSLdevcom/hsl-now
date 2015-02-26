@@ -36,9 +36,6 @@ define(function(require) {
             $.getJSON("http://dev.hel.fi/geocoder/v1/address/?format=json&lon=" + lon + "&lat=" + lat + "&limit=1", function(data) {
                 $("#search-options-from").text(data.objects[0].distance < 1000 ? data.objects[0].name : "");
             });
-        }
-        // set new location from geolocation event, if no source is set
-        if (!config.displayed_location) {
             config.displayed_location = config.device_location;
             positionCallback(config.displayed_location);
         }
@@ -61,8 +58,18 @@ define(function(require) {
             $("#search-options-from").text(data.objects[0].distance < 1000 ? data.objects[0].name : "");
         });
     }
+
+    function positionCallbackFromDestinationLocation(position) {
+        var latFrom = config.source_location[0];
+        var lonFrom = config.source_location[1];
+        var latTo = position.coords.latitude.toPrecision(7);
+        var lonTo = position.coords.longitude.toPrecision(7);
+        window.location.href = "http://koti.kapsi.fi/~hannes/navigator-proto/?usetransit=yes&mode=WALK&start=" + latFrom + "," + lonFrom + "&destination=" + latTo + "," + lonTo + "&destname=foo#map-page";
+    }
+
     return {'positionCallbackFromGeolocation': positionCallbackFromGeolocation,
             'positionCallbackFromDisplayedLocation': positionCallbackFromDisplayedLocation,
-            'positionCallbackFromSourceLocation': positionCallbackFromSourceLocation
+            'positionCallbackFromSourceLocation': positionCallbackFromSourceLocation,
+            'positionCallbackFromDestinationLocation': positionCallbackFromDestinationLocation
             };
 })

@@ -282,7 +282,6 @@ define(function(require) {
 
     $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
         if (suggestion.lat) {
-            config.source_location = null;
             position_callback.positionCallbackFromDisplayedLocation({
                 coords: {
                     latitude: suggestion.lat,
@@ -294,7 +293,6 @@ define(function(require) {
                 reference: suggestion.reference
             }, function(data) {
                 //                console.log(data);
-                config.source_location = null;
                 position_callback.positionCallbackFromDisplayedLocation({
                     coords: {
                         latitude: data.result.geometry.location.lat,

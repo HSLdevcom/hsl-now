@@ -86,9 +86,12 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
         for (var i = 0; i < stops.length && i < 10; i++) { // >>
             total_stops_rendered = 0;
             var stop = stops[i];
-            $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + favorites.render_stop_favorite(stop) + " " + stop.name +
-            ' <div class="btn-group"><button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span></button>' +
-            '<button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div> <small>' +
+            $elem.append("<h4 class='stop-" + stop.id.replace(":", "_") + "'>" + '<div class="btn-group"><button class="btn btn-default"' + 
+            'onclick="position_callback.positionCallbackFromSourceLocation({coords: {latitude: ' + stop.lat +', longitude: ' + stop.lon + '}});">' +
+            '<span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span></button>' +
+            '<button class="btn btn-default" onclick="position_callback.positionCallbackFromDestinationLocation({coords: {latitude: ' + stop.lat + 
+            ', longitude: ' + stop.lon + '}});"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div>&nbsp;'+ 
+            favorites.render_stop_favorite(stop) + " " + stop.name +' <small>' +
             render_stop_angle([lat, lon], [stop.lat, stop.lon]) + " " + Math.ceil(stop.distance) + "m" +
             "</small>" +
             "</h4>");
