@@ -1,6 +1,7 @@
 define(function(require) {
     var $ = require('jquery'),
-        jqueryxdomainrequest = require('jquery.xdomainrequest');
+        jqueryxdomainrequest = require('jquery.xdomainrequest'),
+        route_compare = require("./route_compare");
 
     $.getJSON('http://pubtrans.it/hsl/reittiopas/disruption-api', {}, function(data) {
     //    $.getJSON('http://pubtrans.it/hsl/reittiopas/disruption-api?dt=2014-10-14T17:44:22', {}, function(data) {
@@ -22,9 +23,9 @@ define(function(require) {
 
         data.sort(function(a, b) {
             return route_compare({
-                routeShortName: a.line
+                shortName: a.line
             }, {
-                routeShortName: b.line
+                shortName: b.line
             })
         });
 
