@@ -251,9 +251,13 @@ define(function(require) {
         templates: {
             header: "<h3 class='panel-title'>Pysäkit</h3>",
             suggestion: function(datum) {
-                return '<div><div class="btn-group"><button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span></button>' +
-                        '<button class="btn btn-default">' + datum.description + '</button>' +
-                        '<button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div></div>'
+                var normalized = datum.description.replace("cluster ", "").toLowerCase().replace(/\b(\s\w|^\w)/g, function (txt) { return txt.toUpperCase(); });
+                return '<div><div class="btn-group"><button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromSourceLocation({coords: {latitude: ' +
+                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"</span></button>' + 
+                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: ' +
+                    datum.lat + ', longitude: ' + datum.lng + '}});return false;">' + normalized + '</button>' +
+                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDestinationLocation({coords: {latitude: ' + 
+                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div></div>'
             }
         }
     }, {
@@ -273,7 +277,13 @@ define(function(require) {
         templates: {
             header: "<h3 class='panel-title'>Osoitteet</h3>",
             suggestion: function(datum) {
-                return "<p>" + datum.description + "</p>"
+                console.log(datum);
+                return '<div><div class="btn-group"><button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromSourceLocation({coords: {latitude: ' +
+                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"</span></button>' + 
+                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: ' +
+                    datum.lat + ', longitude: ' + datum.lng + '}});return false;">' + datum.description + '</button>' +
+                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDestinationLocation({coords: {latitude: ' + 
+                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div></div>'
             }
         }
     });
