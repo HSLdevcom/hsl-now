@@ -1,15 +1,7 @@
 define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
-        './favorites', './config', 'exports'],
+        './favorites', './config', 'exports', 'react', 'jsx!render_stop'],
         function($, jqueryxdomainrequest, moment, L, geometryutil, favorites,
-            config, exports) {
-    function renderTime(entry) {
-        var now = moment() / 1000;
-        if (entry.serviceDay + entry.realtimeDeparture - now > 20 * 60 || entry.serviceDay + entry.realtimeDeparture - now <= -60) // if time's far away or was minutes ago
-            return (entry.realtime ? "" : "~") + moment((entry.serviceDay + entry.realtimeDeparture) * 1000).format(" HH:mm"); // display absolute time
-        else
-            return (entry.realtime ? "" : "~") + ((entry.serviceDay + entry.realtimeDeparture - now) / 60 | 0) + "min"; // display relative time rounded towards zero
-        //    return (entry.rtime?entry.rtime.split(":", 2).join(":"):"~"+moment(entry.time*1000).format("HH:mm"));
-    }
+            config, exports, React, render_stop_react) {
 
     function render_stop_angle(p1, p2) {
         var a = L.GeometryUtil.computeAngle(window.map.latLngToLayerPoint(L.latLng(p1)), window.map.latLngToLayerPoint(L.latLng(
@@ -83,6 +75,7 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
         var total_stops_rendered = 0;
 
         var route_id_seen = {};
+
         for (var i = 0; i < stops.length && i < 10; i++) { // >>
             total_stops_rendered = 0;
             var stop = stops[i];
@@ -132,8 +125,7 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
             render_stop[i] = function(i, stop) {
                 return function(data) {
                     //console.log("rendering", stop.id, data);
-                    $(".lahdot-" + stop.id.replace(":", "_")).text("");
-                    var num_rendered = 0;
+                    var rows = [];
                     for (var j = 0; j < data.length; j++) { // >
                         var entry = data[j];
                         for (var j2 = j+1; j2 < data.length; j2++) {
@@ -149,27 +141,14 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
                         });
                         var key = entry.pattern.id;
                         if (!route_id_seen[key]) {
-                            var next_departure = "---"; // XXX maybe after fold?
-                            if (entry.times.length > 1)
-                                next_departure = renderTime(entry.times[1]) 
-                            if (total_rows_rendered === 0)
-                                $(".lahdot-" + stop.id.replace(":", "_")).append(
-                                    "<div class='row header'><div class='col-xs-2 text-right'>Linja</div><div class='col-xs-4 text-right'>Seuraavat lähdöt</div><div class='col-xs-4'>Määränpää</div><div class='col-xs-2'>Pysäkki</div></div>"
-                                );
-                            var route = entry.pattern.shortName ? entry.pattern.shortName : "";
-                            var direction = entry.pattern.direction ? entry.pattern.direction : entry.pattern.longName.replace(/^.*--/, "");
-                            $(".lahdot-" + stop.id.replace(":", "_")).append("<div class='row" + (num_rendered % 2 ? "" : " odd") +
-                            "'><div class='col-xs-2 text-right" + (route === focus_route_name ? " emphasis" : "") + 
-                            "'>" + route + "</div><div class='col-xs-2 text-right'>" + renderTime(entry.times[0]) +
-                            "</div><div class='col-xs-2 text-right'>" + next_departure + "</div><div class='col-xs-4'>" +
-                            direction + "</div><div class='col-xs-2'>" + (stopCodes[entry.times[0].stopId] || "") + "</div></div>");
+                            rows.push(entry)
                             route_id_seen[key] = true;
-                            num_rendered++;
-                            total_rows_rendered++;
                         }
                     }
 
-                    if (!num_rendered) {
+                    React.render(React.createElement(render_stop_react.StopDepartureList, {"entry": rows, "firstRow": (total_stops_rendered === 0), "stopCodes": stopCodes}), $(".lahdot-" + stop.id.replace(":", "_"))[0]);
+
+                    if (rows.length == 0) {
                         $(".stop-" + stop.id.replace(":", "_")).hide();
                     } else {
                         total_stops_rendered++;
