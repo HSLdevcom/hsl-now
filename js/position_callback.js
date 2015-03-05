@@ -64,7 +64,8 @@ define(function(require) {
         var lonFrom = config.source_location[1];
         var latTo = position.coords.latitude.toPrecision(7);
         var lonTo = position.coords.longitude.toPrecision(7);
-        window.location.href = "http://koti.kapsi.fi/~hannes/navigator-proto/?usetransit=yes&mode=WALK&start=" + latFrom + "," + lonFrom + "&destination=" + latTo + "," + lonTo + "&destname=foo#map-page";
+        var basePath = "http://matka.hsl.fi/navigator-proto/";
+        window.location.href = basePath + "?usetransit=yes&mode=WALK&start=" + latFrom + "," + lonFrom + "&destination=" + latTo + "," + lonTo + "&destname=foo#map-page";
     }
 
     return {'positionCallbackFromGeolocation': positionCallbackFromGeolocation,
