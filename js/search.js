@@ -71,7 +71,7 @@ define(function(require) {
                 return parsedResponse
             },
             transport: createRegexGuardedTransport(
-                'http://matka-aika.com/otp/routers/default/geocode?autocomplete=true&clusters=true&stops=false&corners=false&query=%QUERY', /[^\s]{3}/)
+                config.OTP_PATH + '/geocode?autocomplete=true&clusters=true&stops=false&corners=false&query=%QUERY', /[^\s]{3}/)
         }
     });
     stopsByName.initialize();
