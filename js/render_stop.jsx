@@ -43,6 +43,14 @@ define(function(require) {
     },
 
     tick: function() {
+      if (this.update){
+        this.props.updateRows();
+        return;
+      }
+      this.setState({"now": moment()});
+    },
+
+    componentWillReceiveProps: function(newProps) {
       this.setState({"now": moment()});
     },
 
@@ -52,28 +60,30 @@ define(function(require) {
           <span>
             ---
           </span>
-          );
+        );
       var now = this.state.now / 1000;
       var departureTime = this.props.entry.serviceDay + this.props.entry.realtimeDeparture;
-      if (departureTime - now <= 0) // In the past
+      if (departureTime - now <= -60) // Over one minute old times, trigger update on next refresh
+        this.update = true;
+      if (departureTime - now <= 0) { // In the past
         return (
           <span className='departuretime past'>
             {(this.props.entry.realtime ? "" : "~") + moment(departureTime * 1000).format(" HH:mm")}
           </span>
         );
+      };
       if (departureTime - now > 20 * 60) // far away
         return (
           <span>
             {(this.props.entry.realtime ? "" : "~") + moment(departureTime * 1000).format(" HH:mm")}
           </span>
           ); // display absolute time
-      else
+      else 
         return (
           <span>
             {(this.props.entry.realtime ? "" : "~") + ((departureTime - now) / 60 | 0) + (((departureTime - now) < 10*60 && (departureTime - now) % 60) > 30 ? "½" : "" )  + "min"}
           </span>
           ); // display relative time rounded towards zero
-      //    return (entry.rtime?entry.rtime.split(":", 2).join(":"):"~"+moment(entry.time*1000).format("HH:mm"));
     }
   });
 
@@ -110,10 +120,10 @@ define(function(require) {
             {this.props.entry.pattern.shortName ? this.props.entry.pattern.shortName : ""}
           </div>
           <div className="col-xs-2 text-right">
-            <StopDepartureTime entry={times[0]} />
+            <StopDepartureTime entry={times[0]} updateRows={this.props.updateRows} />
           </div>
           <div className='col-xs-2 text-right'>
-            <StopDepartureTime entry={times[1]} />
+            <StopDepartureTime entry={times[1]} updateRows={this.props.updateRows} />
           </div>
           <div className='col-xs-4'>
             {this.props.entry.pattern.direction ? this.props.entry.pattern.direction : this.props.entry.pattern.longName.replace(/^.*--/, "")}
@@ -168,7 +178,7 @@ define(function(require) {
       entries.forEach(function(row) {
         var key = getKeyforRow(row);
         //if (!(key in this.props.routeKeysSeen)) {
-          rows.push(<StopDepartureRow key={key} entry={row} odd={num_rendered % 2 ? '' : ' odd'} stopCodes={this.props.stopCodes} />);
+          rows.push(<StopDepartureRow key={key} entry={row} odd={num_rendered % 2 ? '' : ' odd'} stopCodes={this.props.stopCodes} updateRows={this.props.updateRows}/>);
         //} else {
         //  console.log(this.props.routeKeysSeen[key]);
         //}
@@ -240,27 +250,35 @@ define(function(require) {
   var StopDisplay = React.createClass({
     getInitialState: function() {
       return {
-        rows: []
+        rows: {}
       };
     },
 
-    componentDidMount: function() {
+    updateRows: function() {
       this.props.stops.forEach(function(stop) {
         $.getJSON(config.OTP_PATH + "/index/stops/" + stop.id + "/stoptimes?detail=true", function(data) {
           if (this.isMounted()) {
             data.forEach(function(row) {
               this.props.addRouteKey(getKeyforRow(row), this.props.stopIndex);
             }, this);
-            this.setState({"rows": this.state.rows.concat(data)});
+            var rows = this.state.rows;
+            rows[stop.id] = data 
+            this.setState({"rows": rows});
           }
         }.bind(this));    
       }, this);
     },
 
+    componentDidMount: function() {
+      this.updateRows()
+    },
+
     componentWillReceiveProps: function(newProps) {
-      this.state.rows.forEach(function(row) {
-        this.props.addRouteKey(getKeyforRow(row), newProps.stopIndex);
-      }, this)
+      Object.keys(this.state.rows).forEach(function(key) {
+        this.state.rows[key].forEach(function(row) {
+          this.props.addRouteKey(getKeyforRow(row), newProps.stopIndex);
+        }, this);
+      }, this);
     },
 
     render: function() {
@@ -272,14 +290,21 @@ define(function(require) {
         stopCodes[stop.id] = stop.code;
       });
 
+      var rows = [];
+
+      Object.keys(this.state.rows).forEach(function(key) {
+        rows = rows.concat(this.state.rows[key]);
+      }, this);
+
       return(
         <div>
           <StopDepartureList 
-          entry={this.state.rows} 
+          entry={rows} 
           stopCodes={stopCodes} 
           routeKeysSeen={this.props.routeKeysSeen}
           stopIndex={this.props.stopIndex}
-          filterDuplicates={this.props.filterDuplicates} >
+          filterDuplicates={this.props.filterDuplicates} 
+          updateRows={this.updateRows} >
             <StopHeader stop={this.props.stops[0]} location={this.props.location} />
           </StopDepartureList>
         </div>
