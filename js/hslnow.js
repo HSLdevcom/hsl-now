@@ -67,7 +67,7 @@ define(function(require) {
     });
 
     config.displayed_location = [60.19909, 24.94042];
-    render.render_stops("60.19909", "24.94042", favorites, $(".favorites"));
+    render.render_stops("60.19909", "24.94042", favorites.favorites, $(".favorites"));
 
     if (navigator && navigator.geolocation && navigator.geolocation.watchPosition) {
         navigator.geolocation.watchPosition(
