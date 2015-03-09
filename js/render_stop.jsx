@@ -8,6 +8,18 @@ define(function(require) {
 
       L = require('leaflet');
 
+  var SetIntervalMixin = {
+    componentWillMount: function() {
+      this.intervals = [];
+    },
+    setInterval: function() {
+      this.intervals.push(setInterval.apply(null, arguments));
+    },
+    componentWillUnmount: function() {
+      this.intervals.map(clearInterval);
+    }
+  };
+
   var getKeyforRow = function(row) {
     return "" + row.pattern.shortName + (row.pattern.direction ? row.pattern.direction : row.pattern.longName.replace(/^.*--/, ""))
   };
@@ -18,6 +30,22 @@ define(function(require) {
   }
 
   var StopDepartureTime = React.createClass({
+    mixins: [SetIntervalMixin],
+
+    getInitialState: function() {
+      return {
+        now: moment()
+      };
+    },
+
+    componentDidMount: function() {
+      this.setInterval(this.tick, 10000);
+    },
+
+    tick: function() {
+      this.setState({"now": moment()});
+    },
+
     render: function() {
       if (this.props.entry == undefined)
         return (
@@ -25,9 +53,15 @@ define(function(require) {
             ---
           </span>
           );
-      var now = moment() / 1000;
+      var now = this.state.now / 1000;
       var departureTime = this.props.entry.serviceDay + this.props.entry.realtimeDeparture;
-      if (departureTime - now > 20 * 60 || departureTime - now <= -60) // if time's far away or was minutes ago
+      if (departureTime - now <= 0) // In the past
+        return (
+          <span className='departuretime past'>
+            {(this.props.entry.realtime ? "" : "~") + moment(departureTime * 1000).format(" HH:mm")}
+          </span>
+        );
+      if (departureTime - now > 20 * 60) // far away
         return (
           <span>
             {(this.props.entry.realtime ? "" : "~") + moment(departureTime * 1000).format(" HH:mm")}
@@ -36,7 +70,7 @@ define(function(require) {
       else
         return (
           <span>
-            {(this.props.entry.realtime ? "" : "~") + ((departureTime - now) / 60 | 0) + "min"}
+            {(this.props.entry.realtime ? "" : "~") + ((departureTime - now) / 60 | 0) + (((departureTime - now) < 10*60 && (departureTime - now) % 60) > 30 ? "½" : "" )  + "min"}
           </span>
           ); // display relative time rounded towards zero
       //    return (entry.rtime?entry.rtime.split(":", 2).join(":"):"~"+moment(entry.time*1000).format("HH:mm"));
@@ -319,7 +353,6 @@ define(function(require) {
     }
   });
 
-  return {"StopDepartureList": StopDepartureList,
-          "StopDisplayList": StopDisplayList};
+  return {"StopDisplayList": StopDisplayList};
 
 });
