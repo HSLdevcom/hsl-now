@@ -96,16 +96,8 @@ define(function(require) {
         }
     }
 
-    function render_stop_favorite(stop) {
-        if (is_favorite_stop(stop.code))
-            return "<a class='favorite glyphicon glyphicon-star' href='javascript:favorites.unfavorite_stop(" + JSON.stringify(stop) +
-                ")'></a> ";
-        else
-            return "<a class='notfavorite glyphicon glyphicon-star-empty' href='javascript:favorites.favorite_stop(" + JSON.stringify(
-                    stop) + ")'></a> ";
-    }
     return {'favorites': favorites,
-            'render_stop_favorite': render_stop_favorite,
+            'is_favorite_stop': is_favorite_stop,
             'render_favorites': render_favorites,
             'favorite_stop': favorite_stop,
             'unfavorite_stop': unfavorite_stop};

@@ -12,6 +12,11 @@ define(function(require) {
     return "" + row.pattern.shortName + (row.pattern.direction ? row.pattern.direction : row.pattern.longName.replace(/^.*--/, ""))
   };
 
+  // from leaflet geo/crs/CRS.Earth.js
+  var distance = function(lat1, lng1, lat2, lng2) {
+      return 6378137 * Math.acos(Math.sin(lat1 * Math.PI / 180) * Math.sin(lat2 * Math.PI / 180) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.cos((lng1 - lng2) * Math.PI / 180));
+  }
+
   var StopDepartureTime = React.createClass({
     render: function() {
       if (this.props.entry == undefined)
@@ -92,38 +97,53 @@ define(function(require) {
       var rows = [];
       var num_rendered = 0;
       var entries = [];
-      var filtered = [];
-      var routeIdSeen = this.props.routeIdSeen || [];
-      if (this.props.displayHeader) {
+      var entryObjs= {};
+
+      this.props.entry.forEach(function(entry) {
+        var key = getKeyforRow(entry);
+        if (key in this.props.routeKeysSeen && this.props.routeKeysSeen[key] < this.props.stopIndex){
+          return;
+        }
+
+        if (key in entryObjs) {
+          entries[entryObjs[key]].times.concat(entry.times);
+          // Keep entries in order after merging patterns
+          entries[entryObjs[key]].times.sort(function(a, b) {
+            return (a.serviceDay + a.realtimeDeparture - b.serviceDay - b.realtimeDeparture);
+          });
+        } else {
+          entryObjs[key] = entries.length;
+          entries[entryObjs[key]] = entry;
+        }
+      }, this);
+
+      // Do not return anything if we don't have anything to show!
+      if (entries.length == 0){
+        return false;
+      }
+
+      entries.sort(function(a, b){
+        return (a.times[0].serviceDay + a.times[0].realtimeDeparture - b.times[0].serviceDay - b.times[0].realtimeDeparture);
+      });
+
+      if (this.props.stopIndex == 0) {
         rows.push(<StopDepartureHeader key="header"/>);
         num_rendered++;
       }
 
-      // Filter out patterns with matching short name and destination
-      for (var j = 0; j < this.props.entry.length; j++) {
-        if (j2 in filtered)
-          continue;
-        var entry = this.props.entry[j];
-        var key1 = getKeyforRow(entry);
-        if (~routeIdSeen.indexOf(key1))
-          continue;
-        for (var j2 = j+1; j2 < this.props.entry.length; j2++) {
-          var key2 = this.props.entry[j2];
-          if (key1 == key2) {
-            Array.prototype.push.apply(entry.times, this.props.entry[j2]);
-            filtered.push(j2);
-            continue
-          }
-        }
-        entries.push(entry);
-      }
-
       entries.forEach(function(row) {
         var key = getKeyforRow(row);
-        rows.push(<StopDepartureRow key={key} entry={row} odd={num_rendered % 2 ? '' : ' odd'} stopCodes={this.props.stopCodes} />);
+        //if (!(key in this.props.routeKeysSeen)) {
+          rows.push(<StopDepartureRow key={key} entry={row} odd={num_rendered % 2 ? '' : ' odd'} stopCodes={this.props.stopCodes} />);
+        //} else {
+        //  console.log(this.props.routeKeysSeen[key]);
+        //}
         num_rendered++;
       }, this);
-      return (<div>{rows}</div>);
+      return (<div>
+              {this.props.children}
+              <small className="lahdotgroup">{rows}</small>
+              </div>);
     }
   });
 
@@ -184,50 +204,117 @@ define(function(require) {
   });
 
   var StopDisplay = React.createClass({
+    getInitialState: function() {
+      return {
+        rows: []
+      };
+    },
+
+    componentDidMount: function() {
+      this.props.stops.forEach(function(stop) {
+        $.getJSON(config.OTP_PATH + "/index/stops/" + stop.id + "/stoptimes?detail=true", function(data) {
+          if (this.isMounted()) {
+            data.forEach(function(row) {
+              this.props.addRouteKey(getKeyforRow(row), this.props.stopIndex);
+            }, this);
+            this.setState({"rows": this.state.rows.concat(data)});
+          }
+        }.bind(this));    
+      }, this);
+    },
+
+    componentWillReceiveProps: function(newProps) {
+      this.state.rows.forEach(function(row) {
+        this.props.addRouteKey(getKeyforRow(row), newProps.stopIndex);
+      }, this)
+    },
+
     render: function() {
-      if (!this.props.display)
+      if (false) // !this.prosp.display
         return(<div></div>);
-      var test = <div />;
+      
+      var stopCodes = [];
+      this.props.stops.forEach(function(stop) {
+        stopCodes[stop.id] = stop.code;
+      });
+
       return(
         <div>
-          <StopHeader stop={this.props.stop} location={this.props.location} />
-          <small className="lahdotgroup">
-            <StopDepartureList 
-            entry={this.props.stop.rows} 
-            displayHeader={this.props.displayHeader} 
-            stopCodes={this.props.stopCodes} 
-            routeIdSeen={this.props.routeIdSeen}
-            filterDuplicates={this.props.filterDuplicates} />
-          </small>
+          <StopDepartureList 
+          entry={this.state.rows} 
+          stopCodes={stopCodes} 
+          routeKeysSeen={this.props.routeKeysSeen}
+          stopIndex={this.props.stopIndex}
+          filterDuplicates={this.props.filterDuplicates} >
+            <StopHeader stop={this.props.stops[0]} location={this.props.location} />
+          </StopDepartureList>
         </div>
         );
     }
   });
 
   var StopDisplayList = React.createClass({
+    getInitialState: function() {
+      return {
+        routeKeysSeen: {}
+      };
+    },
+
+    addRouteKey: function(key, index) {
+      var routeKeysSeen = this.state.routeKeysSeen;
+      if (key in routeKeysSeen && routeKeysSeen[key] <= index)
+        return;
+      routeKeysSeen[key] = index;
+      this.setState({routeKeysSeen: routeKeysSeen});
+    },
+
+    componentWillReceiveProps: function(newProps) {
+      this.setState({routeKeysSeen: {}});
+    },
+
     render: function() {
       var stops = [];
-      var routeIdSeen = [];
-      var showHeader = true;
+      var stopObjs = {};
+
       this.props.stops.forEach(function(stop) {
-        stops.push(<StopDisplay 
-          key={stop.id} 
-          stop={stop} 
-          display={stop.display} 
-          location={this.props.location} 
-          displayHeader={showHeader}
-          stopCodes={this.props.stopCodes} 
-          routeIdSeen={routeIdSeen}
-          filterDuplicates={true} />);
-        if (stop.display) {
-          showHeader = false;
+        if ("dist" in stop) {
+          stop.distance = stop.dist;
+        } else {
+          stop.distance = distance(this.props.location[0], this.props.location[1], stop.lat, stop.lon);
         }
-        stop.rows.forEach(function(row) {
-          //routeIdSeen.push(getKeyforRow(row));
-        }, this );
+        if (stop.name in stopObjs) {
+          stops[stopObjs[stop.name]].push(stop);
+          // Keep stops in order so that nearest is first
+          stops[stopObjs[stop.name]].sort(function(a, b) {
+            return a.distance - b.distance;
+          });
+        } else {
+          stopObjs[stop.name] = stops.length;
+          stops[stopObjs[stop.name]] = [stop];
+        }
+      }, this);
+      
+      // Sort stops based on nearest stop
+      stops.sort(function(a, b) {
+        return a[0].distance - b[0].distance;
+      });
+
+      var stopComponents = [];
+
+      stops.forEach(function(stop, i) {
+        if (i > 4)
+          return;
+        stopComponents.push(<StopDisplay 
+          key={stop[0].name} 
+          stops={stop} 
+          location={this.props.location} 
+          routeKeysSeen={this.state.routeKeysSeen}
+          addRouteKey={this.addRouteKey}
+          stopIndex={i}
+          filterDuplicates={true} />);
       }, this);
       return (
-        <div>{stops}</div>
+        <div>{stopComponents}</div>
       );
     }
   });
