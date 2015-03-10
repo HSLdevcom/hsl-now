@@ -78,7 +78,8 @@ define(function(require) {
                         $('.lahdot').text('Paikannus epäonnistui: "' + error.message + '"');
                     }},
                 {enableHighAccuracy: true,
-                 timeout: 0xFFFFFFFF});
+                 timeout: 0xFFFFFFFF,
+                 maximumAge: 2*60*1000 });
     } else {
         // hsl:
         position_callback.positionCallbackFromDisplayedLocation({
