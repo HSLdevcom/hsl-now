@@ -30,30 +30,6 @@ define(function(require) {
   }
 
   var StopDepartureTime = React.createClass({
-    mixins: [SetIntervalMixin],
-
-    getInitialState: function() {
-      return {
-        now: moment()
-      };
-    },
-
-    componentDidMount: function() {
-      this.setInterval(this.tick, 10000);
-    },
-
-    tick: function() {
-      if (this.update){
-        this.props.updateRows();
-        return;
-      }
-      this.setState({"now": moment()});
-    },
-
-    componentWillReceiveProps: function(newProps) {
-      this.setState({"now": moment()});
-    },
-
     render: function() {
       if (this.props.entry == undefined)
         return (
@@ -61,10 +37,8 @@ define(function(require) {
             ---
           </span>
         );
-      var now = this.state.now / 1000;
+      var now = this.props.now / 1000;
       var departureTime = this.props.entry.serviceDay + this.props.entry.realtimeDeparture;
-      if (departureTime - now <= -60) // Over one minute old times, trigger update on next refresh
-        this.update = true;
       if (departureTime - now <= 0) { // In the past
         return (
           <span className='departuretime past'>
@@ -120,10 +94,10 @@ define(function(require) {
             {this.props.entry.pattern.shortName ? this.props.entry.pattern.shortName : ""}
           </div>
           <div className="col-xs-2 text-right">
-            <StopDepartureTime entry={times[0]} updateRows={this.props.updateRows} />
+            <StopDepartureTime entry={times[0]} now={this.props.now}/>
           </div>
           <div className='col-xs-2 text-right'>
-            <StopDepartureTime entry={times[1]} updateRows={this.props.updateRows} />
+            <StopDepartureTime entry={times[1]} now={this.props.now}/>
           </div>
           <div className='col-xs-4'>
             {this.props.entry.pattern.direction ? this.props.entry.pattern.direction : this.props.entry.pattern.longName.replace(/^.*--/, "")}
@@ -170,6 +144,10 @@ define(function(require) {
         return (a.times[0].serviceDay + a.times[0].realtimeDeparture - b.times[0].serviceDay - b.times[0].realtimeDeparture);
       });
 
+      // Check if the earliest departure is alt least one munite ago
+      if (entries[0].times[0].serviceDay + entries[0].times[0].realtimeDeparture < (this.props.now / 1000) - 60 )
+        this.props.requestUpdate()
+
       if (this.props.stopIndex == 0) {
         rows.push(<StopDepartureHeader key="header"/>);
         num_rendered++;
@@ -178,7 +156,7 @@ define(function(require) {
       entries.forEach(function(row) {
         var key = getKeyforRow(row);
         //if (!(key in this.props.routeKeysSeen)) {
-          rows.push(<StopDepartureRow key={key} entry={row} odd={num_rendered % 2 ? '' : ' odd'} stopCodes={this.props.stopCodes} updateRows={this.props.updateRows}/>);
+          rows.push(<StopDepartureRow key={key} entry={row} odd={num_rendered % 2 ? '' : ' odd'} stopCodes={this.props.stopCodes} now={this.props.now}/>);
         //} else {
         //  console.log(this.props.routeKeysSeen[key]);
         //}
@@ -248,10 +226,31 @@ define(function(require) {
   });
 
   var StopDisplay = React.createClass({
+    mixins: [SetIntervalMixin],
+
     getInitialState: function() {
       return {
-        rows: {}
+        rows: {},
+        now: moment()
       };
+    },
+
+    componentDidMount: function() {
+      this.setInterval(this.tick, 10000);
+      this.updateRows()
+    },
+
+    tick: function() {
+      if (this.update) {
+        this.update = false;
+        this.updateRows();
+        return;
+      }
+      this.setState({now: moment()});
+    },
+
+    requestUpdate: function() {
+      this.update = true;
     },
 
     updateRows: function() {
@@ -263,14 +262,10 @@ define(function(require) {
             }, this);
             var rows = this.state.rows;
             rows[stop.id] = data 
-            this.setState({"rows": rows});
+            this.setState({rows: rows, now: moment()});
           }
         }.bind(this));    
       }, this);
-    },
-
-    componentDidMount: function() {
-      this.updateRows()
     },
 
     componentWillReceiveProps: function(newProps) {
@@ -304,7 +299,8 @@ define(function(require) {
           routeKeysSeen={this.props.routeKeysSeen}
           stopIndex={this.props.stopIndex}
           filterDuplicates={this.props.filterDuplicates} 
-          updateRows={this.updateRows} >
+          requestUpdate={this.requestUpdate} 
+          now={this.state.now} >
             <StopHeader stop={this.props.stops[0]} location={this.props.location} />
           </StopDepartureList>
         </div>
