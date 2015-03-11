@@ -97,6 +97,7 @@ define(function(require) {
     }
 
     return {'favorites': favorites,
+            'mygroups': mygroups,
             'is_favorite_stop': is_favorite_stop,
             'render_favorites': render_favorites,
             'favorite_stop': favorite_stop,

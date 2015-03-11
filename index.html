@@ -143,7 +143,7 @@
               <!-- No dynamical functionality yet -->
               <big>
                   <div class="">
-                      <a href="javascript:$('.lahdot').text('');position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: device_location[0], longitude: device_location[1]}});"><i>Laitteen paikantama sijainti</i></a>
+                      <a href="javascript:$('.lahdot').text('');position_callback.positionCallbackFromDisplayedLocation({coords: {latitude:  parseFloat(config.device_location[0]), longitude:  parseFloat(config.device_location[1])}});"><i>Laitteen paikantama sijainti</i></a>
                   </div>
                   <div>Aiemmat sijaintisi:</div>
                   <div class="">
@@ -168,7 +168,7 @@
       </div>
       <div>Tallentamasi koosteet:</div>
       <div class="">     
-      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:$('.groupname').text('Junat keskustasta');render.render_stops(displayed_location[0], displayed_location[1], mygroups['Junat keskustasta'], $('.favorites'));">Junat keskustasta</a>
+      <a href="#" class="favorite glyphicon glyphicon-star"></a> <a href="javascript:$('.groupname').text('Junat keskustasta');render.render_stops(config.displayed_location[0], config.displayed_location[1], favorites.mygroups['Junat keskustasta'], $('.favorites'));">Junat keskustasta</a>
       </div>
       </big>
        </div>
