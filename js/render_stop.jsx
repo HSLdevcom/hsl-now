@@ -5,6 +5,7 @@ define(function(require) {
       moment = require('moment'),
       favorites = require('favorites'),
       position_callback = require('position_callback');
+      render = require('render');
 
       L = require('leaflet');
 
@@ -83,6 +84,13 @@ define(function(require) {
 
   var StopDepartureRow = React.createClass({
     render: function() {
+      var clickCallback = function(trip) {
+        return function() {
+          if (this.tripId == undefined) 
+            return;
+          render.render_stoptimes(this.tripId, $(".favorites"));
+        }.bind(trip);
+      };
       var focus_route_name = "";
       var times = this.props.entry.times;
       times.sort(function(a, b){
@@ -93,11 +101,11 @@ define(function(require) {
           <div className={"col-xs-2 text-right" + (this.props.entry.route === focus_route_name ? ' emphasis' : '')}>
             {this.props.entry.pattern.shortName ? this.props.entry.pattern.shortName : ""}
           </div>
-          <div className="col-xs-2 text-right">
-            <StopDepartureTime entry={times[0]} now={this.props.now}/>
+          <div className="col-xs-2 text-right" onClick={clickCallback(times[0])} >
+            <StopDepartureTime entry={times[0]} now={this.props.now} />
           </div>
-          <div className='col-xs-2 text-right'>
-            <StopDepartureTime entry={times[1]} now={this.props.now}/>
+          <div className='col-xs-2 text-right' onClick={clickCallback(times[1])} >
+            <StopDepartureTime entry={times[1]} now={this.props.now} />
           </div>
           <div className='col-xs-4'>
             {this.props.entry.pattern.direction ? this.props.entry.pattern.direction : this.props.entry.pattern.longName.replace(/^.*--/, "")}
@@ -200,10 +208,10 @@ define(function(require) {
     render: function() {
       var setAsDeparturePlace = function() {
         position_callback.positionCallbackFromSourceLocation({"coords": {"latitude": this.props.stop.lat , "longitude": this.props.stop.lon }});
-      };
+      }.bind(this);
       var setAsArrivalPlace = function() {
         position_callback.positionCallbackFromDestinationLocation({"coords": {"latitude": this.props.stop.lat , "longitude": this.props.stop.lon }});
-      };
+      }.bind(this);
       return (
         <div>
           <h4 className={"stop-" + this.props.stop.id.replace(":", "_")}>
@@ -211,7 +219,7 @@ define(function(require) {
               <button className="btn btn-default" onClick={setAsDeparturePlace}>
                 <span className="glyphicon glyphicon glyphicon-log-out" aria-hidden="true" />
               </button>
-              <button className="btn btn-default" onClick={setAsDeparturePlace}>
+              <button className="btn btn-default" onClick={setAsArrivalPlace}>
                 <span className="glyphicon glyphicon glyphicon-log-in" aria-hidden="true" />
               </button>
             </div>
@@ -373,7 +381,190 @@ define(function(require) {
       );
     }
   });
+  
+  var StopInformation = React.createClass({
+    getInitialState: function() {
+      return {info: false};
+    },
 
-  return {"StopDisplayList": StopDisplayList};
+    componentDidMount: function() {
+      this.fetchStopInfo();
+    },
+
+    fetchStopInfo: function() {
+      $.getJSON(config.OTP_PATH + "/index/stops/" + this.props.stop , function(data) {
+        if (this.isMounted()) {
+          this.setState({info: data});
+        }
+      }.bind(this));    
+    },
+  
+    render: function() {
+      return (
+        <div>
+        <h3>{this.state.info.name}</h3>
+        <StopRoutes stop={this.props.stop} />
+        </div>
+      );
+    }
+  
+  });
+
+  var StopRoutes = React.createClass({
+    getInitialState: function() {
+      return {routes: []};
+    },
+
+    componentDidMount: function() {
+      this.fetchStopInfo();
+    },
+
+    fetchStopInfo: function() {
+      $.getJSON(config.OTP_PATH + "/index/stops/" + this.props.stop + "/routes" , function(data) {
+        if (this.isMounted()) {
+          this.setState({routes: data});
+        }
+      }.bind(this));    
+    },
+  
+    render: function() {
+      var routeComponents = [];
+      this.state.routes.forEach(function(route) {
+        routeComponents.push(<StopRouteTrips key={route.id} route={route} stop={this.props.stop} /> )
+      }, this);
+      return (
+        <div>
+          {routeComponents}
+        </div>
+      );
+    }
+  });
+
+  var StopRouteTrips = React.createClass({
+    getInitialState: function() {
+      return {trips: []};
+    },
+
+    componentDidMount: function() {
+      this.fetchStopInfo();
+    },
+
+    fetchStopInfo: function() {
+      $.getJSON(config.OTP_PATH + "/index/routes/" + this.props.route.id + "/trips" , function(data) {
+        if (this.isMounted()) {
+          this.setState({trips: data});
+        }
+      }.bind(this));    
+    },
+  
+    render: function() {
+      var tripComponents = [];
+      this.state.trips.forEach(function(trip) {
+        tripComponents.push(<StopRouteTripTime key={trip.id} trip={trip} stop={this.props.stop} /> );
+      }, this);
+      return (
+        <div>
+          <h4>{this.props.route.longName}</h4>
+          {tripComponents}
+        </div>
+      );
+    }
+  });
+
+  var StopRouteTripTime = React.createClass({
+    getInitialState: function() {
+      return {stopTimes: []};
+    },
+
+    componentDidMount: function() {
+      this.fetchStopInfo();
+    },
+
+    fetchStopInfo: function() {
+      $.getJSON(config.OTP_PATH + "/index/trips/" + this.props.trip.id + "/stoptimes" , function(data) {
+        if (this.isMounted()) {
+          this.setState({stopTimes: data});
+        }
+      }.bind(this));    
+    },
+  
+    render: function() {
+      var stopTimes = [];
+      this.state.stopTimes.forEach(function(stopTime) {
+        if (stopTime.stopId == this.props.stop)
+          stopTimes.push(<span key={stopTime.scheduledDeparture}>{moment(stopTime.scheduledDeparture * 1000).format(" HH:mm")}</span> )
+      }, this);
+      return (
+        <div>
+          {stopTimes}
+        </div>
+      );
+    }
+  });
+
+  var TripTimeList = React.createClass({
+    getInitialState: function() {
+      return {stopTimes: [], stops: []};
+    },
+
+    componentDidMount: function() {
+      this.fetchStopInfo();
+    },
+
+    componentWillReceiveProps: function(nextProps) {
+      this.fetchStopInfo(nextProps);
+    },
+
+    fetchStopInfo: function(newProps) {
+      var trip = newProps ? newProps.trip : this.props.trip;
+      $.getJSON(config.OTP_PATH + "/index/trips/" + trip + "/stoptimes" , function(data) {
+        if (this.isMounted()) {
+          this.setState({stopTimes: data});
+        }
+      }.bind(this));
+      $.getJSON(config.OTP_PATH + "/index/trips/" + trip + "/stops" , function(data) {
+        if (this.isMounted()) {
+          this.setState({stops: data});
+        }
+      }.bind(this));    
+    },
+
+    render: function() {
+      var rows = [];
+      if (this.state.stops.length != this.state.stopTimes.length)
+        return false;
+      rows.push(
+        <div className='row header'>
+          <div className='col-xs-2 text-right'>
+            Lähtöaika
+          </div>
+          <div className='col-xs-10'>
+            Pysäkki
+          </div>
+        </div>
+      );
+      this.state.stopTimes.forEach(function(stopTime, i) {
+        rows.push(
+          <div className={"row " + (i % 2 ? '' : ' odd')} key={stopTime.stopId + stopTime.scheduledDeparture}>
+            <div className="col-xs-2 text-right">
+              {moment((1426024800 + stopTime.scheduledDeparture) * 1000).format("HH:mm")}
+            </div>
+            <div className="col-xs-10">
+              {this.state.stops[i].name}
+            </div>
+          </div>
+          );
+      }, this);
+      return (
+        <small className="lahdotgroup">
+          {rows}
+        </small>
+      );
+    }
+  });
+
+  return {"StopDisplayList": StopDisplayList,
+          "StopInformation": StopInformation,
+           "TripTimeList": TripTimeList};
 
 });

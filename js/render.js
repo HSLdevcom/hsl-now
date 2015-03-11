@@ -13,5 +13,15 @@ define(['jquery', 'jquery.xdomainrequest', 'moment', 'leaflet', 'geometryutil',
             "location": [lat, lon],
         }
         var r = React.render(React.createElement(render_stop_react.StopDisplayList, props), $elem[0]);
-    }
+    };
+
+    exports.render_stop_info = function(stop_id, $elem) {
+        $('.groupname').text('Pysäkin tiedot');
+        React.render(React.createElement(render_stop_react.StopInformation, {"stop": stop_id}), $elem[0]);
+    };
+
+    exports.render_stoptimes = function(trip_id, $elem) {
+        $('.groupname').text('Lähdön tiedot');
+        React.render(React.createElement(render_stop_react.TripTimeList, {"trip": trip_id}), $elem[0])
+    };
 })
