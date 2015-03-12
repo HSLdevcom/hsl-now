@@ -547,7 +547,7 @@ define(function(require) {
         rows.push(
           <div className={"row " + (i % 2 ? '' : ' odd')} key={stopTime.stopId + stopTime.scheduledDeparture}>
             <div className="col-xs-2 text-right">
-              {moment((1426024800 + stopTime.scheduledDeparture) * 1000).format("HH:mm")}
+              {moment().startOf('day').add(stopTime.scheduledDeparture, 's').format("HH:mm")}
             </div>
             <div className="col-xs-10">
               {this.state.stops[i].name}
