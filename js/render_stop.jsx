@@ -66,11 +66,11 @@ define(function(require) {
     render: function() {
       return (
         <div className='row header'>
-          <div className='col-xs-2 text-right'>
-            Linja
-          </div>
           <div className='col-xs-4 text-right'>
             Seuraavat lähdöt
+          </div>
+          <div className='col-xs-2 text-right'>
+            Linja
           </div>
           <div className='col-xs-4'>
             Määränpää
@@ -98,17 +98,17 @@ define(function(require) {
       });
       return (
         <div className={"row " + this.props.odd}>
-          <div className={"col-xs-2 text-right" + (this.props.entry.route === focus_route_name ? ' emphasis' : '')}>
-            {this.props.entry.pattern.shortName ? this.props.entry.pattern.shortName : ""}
-          </div>
           <div className="col-xs-2 text-right" onClick={clickCallback(times[0])} >
             <StopDepartureTime entry={times[0]} now={this.props.now} />
           </div>
           <div className='col-xs-2 text-right' onClick={clickCallback(times[1])} >
             <StopDepartureTime entry={times[1]} now={this.props.now} />
           </div>
+          <div className={"col-xs-2 text-right" + (this.props.entry.route === focus_route_name ? ' emphasis' : '')}>
+            {this.props.entry.pattern.shortName ? this.props.entry.pattern.shortName : ""}
+          </div>
           <div className='col-xs-4'>
-            {this.props.entry.pattern.direction ? this.props.entry.pattern.direction : this.props.entry.pattern.longName.replace(/^.*--/, "")}
+            → {this.props.entry.pattern.direction ? this.props.entry.pattern.direction : this.props.entry.pattern.longName.replace(/^.*--/, "")}
           </div>
           <div className='col-xs-2'>
             {this.props.stopCodes[this.props.entry.times[0].stopId] || ""}
