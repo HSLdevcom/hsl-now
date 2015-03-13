@@ -106,11 +106,15 @@
       </div>
     </div>
     <div class="container">
-      <div id="search-options" class="input-group">
+      <div id="search-options">
         <form class="form-horizontal" role="form">
-        <button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"></span>&nbsp;<span id="search-options-from">Lähtöpaikka</span></button>
-        <button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-time" aria-hidden="true"></span>&nbsp;<span id="search-options-time"></span></button>
-        <button class="btn btn-default"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></span>&nbsp;<span id="search-options-to">Aseta määränpää hakemalla</span></button>
+        <button id="search-options-button" class="btn btn-default btn-block">
+          <span class="close pull-right" aria-label="Close">&times;</span>
+          <span class="pull-left"> 
+            <span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span>
+            <span id="search-options-from">Lähtöpaikka</span>
+          </span>
+        </button>
         </form>
       </div>
     </div>
@@ -194,7 +198,8 @@
             paths: {
                 "leaflet": "//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet",
                 "geometryutil": "//cdn.rawgit.com/makinacorpus/Leaflet.GeometryUtil/0f04b781f1320147bb363954787c20e95faad117/dist/leaflet.geometryutil", // XXX breaks IE8
-                "moment": "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.5.1/moment.min",
+                "moment": "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment.min",
+                "moment-timezone": "//cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.3.0/moment-timezone.min.js",
                 "bootstrap": ["//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min", "//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/js/bootstrap.min"],  // Example of failsafe loading from a mirror
                 "typeahead": "typeahead.bundle",
                 "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.1/jquery.min",

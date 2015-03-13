@@ -56,12 +56,12 @@ define(function(require) {
 
     var stopsByName = new Bloodhound({
         datumTokenizer: function(d) {
-            return Bloodhound.tokenizers.nonword(d.description);
+            return Bloodhound.tokenizers.nonword(datum.description.replace("cluster ", "").toLowerCase().replace(/\b(\s\w|^\w)/g, function (txt) { return txt.toUpperCase(); }));
         },
         queryTokenizer: Bloodhound.tokenizers.nonword,
         limit: 100,
         sorter: function(a, b) {
-            return a.description.localeCompare(b.description) || (a.id || "xxx").localeCompare(b.id || "xxx");
+            return a.description.replace("cluster ", "").toLowerCase().replace(/\b(\s\w|^\w)/g, function (txt) { return txt.toUpperCase(); }).localeCompare(b.description.replace("cluster ", "").toLowerCase().replace(/\b(\s\w|^\w)/g, function (txt) { return txt.toUpperCase(); })) || (a.id || "xxx").localeCompare(b.id || "xxx");
         },
         remote: {
             url: "stopsByName:%QUERY",
@@ -252,12 +252,7 @@ define(function(require) {
             header: "<h3 class='panel-title'>Pysäkit</h3>",
             suggestion: function(datum) {
                 var normalized = datum.description.replace("cluster ", "").toLowerCase().replace(/\b(\s\w|^\w)/g, function (txt) { return txt.toUpperCase(); });
-                return '<div><div class="btn-group"><button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromSourceLocation({coords: {latitude: ' +
-                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"</span></button>' + 
-                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: ' +
-                    datum.lat + ', longitude: ' + datum.lng + '}});return false;">' + normalized + '</button>' +
-                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDestinationLocation({coords: {latitude: ' + 
-                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div></div>'
+                return "<p>" + normalized + "</p>"
             }
         }
     }, {
@@ -278,12 +273,7 @@ define(function(require) {
             header: "<h3 class='panel-title'>Osoitteet</h3>",
             suggestion: function(datum) {
                 console.log(datum);
-                return '<div><div class="btn-group"><button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromSourceLocation({coords: {latitude: ' +
-                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-out" aria-hidden="true"</span></button>' + 
-                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDisplayedLocation({coords: {latitude: ' +
-                    datum.lat + ', longitude: ' + datum.lng + '}});return false;">' + datum.description + '</button>' +
-                    '<button class="btn btn-default" onclick="console.log(event);position_callback.positionCallbackFromDestinationLocation({coords: {latitude: ' + 
-                    datum.lat + ', longitude: ' + datum.lng + '}});return false;"><span class="glyphicon glyphicon glyphicon-log-in" aria-hidden="true"></button></div></div>'
+                return "<p>" + datum.description + "</p>"
             }
         }
     });
@@ -292,24 +282,45 @@ define(function(require) {
 
     $('.typeahead').on('typeahead:selected', function(event, suggestion, dataset) {
         if (suggestion.lat) {
-            position_callback.positionCallbackFromDisplayedLocation({
-                coords: {
-                    latitude: suggestion.lat,
-                    longitude: suggestion.lng
-                }
-            });
-        } else if (suggestion.reference) {
-            $.getJSON("http://data.okf.fi/gis/1/geocode.json", {
-                reference: suggestion.reference
-            }, function(data) {
-                //                console.log(data);
-                position_callback.positionCallbackFromDisplayedLocation({
+            if (!config.source_location) {
+                position_callback.positionCallbackFromSourceLocation({
                     coords: {
-                        latitude: data.result.geometry.location.lat,
-                        longitude: data.result.geometry.location.lng
+                        latitude: suggestion.lat,
+                        longitude: suggestion.lng
                     }
                 });
-            });
+            } else {
+                position_callback.positionCallbackFromDestinationLocation({
+                    coords: {
+                        latitude: suggestion.lat,
+                        longitude: suggestion.lng
+                    }
+                });
+            }
+        } else if (suggestion.reference) {
+            if (!config.source_location) {
+                $.getJSON("http://data.okf.fi/gis/1/geocode.json", {
+                    reference: suggestion.reference
+                }, function(data) {
+                    position_callback.positionCallbackFromSourceLocation({
+                        coords: {
+                            latitude: data.result.geometry.location.lat,
+                            longitude: data.result.geometry.location.lng
+                        }
+                    });
+                });
+            } else {
+            $.getJSON("http://data.okf.fi/gis/1/geocode.json", {
+                    reference: suggestion.reference
+                }, function(data) {
+                    position_callback.positionCallbackFromDestinationLocation({
+                        coords: {
+                            latitude: data.result.geometry.location.lat,
+                            longitude: data.result.geometry.location.lng
+                        }
+                    });
+                });
+            }
         } else if (suggestion.longName) {
             $.getJSON("http://matka-aika.com/otp/routers/default/index/routes/" + suggestion.id + "/stops", function(data) {
                 $('.groupname').text("Linjan " + (suggestion.shortName || suggestion.longName) +

@@ -31,12 +31,17 @@ define(function(require) {
         var lat = position.coords.latitude.toPrecision(7);
         var lon = position.coords.longitude.toPrecision(7);
         config.device_location = [lat, lon];
-        if (!config.source_location) {
+        if (config.source_location === null) {
             config.source_location = config.device_location;
             $.getJSON("http://dev.hel.fi/geocoder/v1/address/?format=json&lon=" + lon + "&lat=" + lat + "&limit=1", function(data) {
                 $("#search-options-from").text(data.objects[0].distance < 1000 ? data.objects[0].name : "");
             });
             config.displayed_location = config.device_location;
+            $("#search-options-button").click(function(e) {
+                e.preventDefault();
+                $("#search-options-button").unbind("click");
+                position_callback.unsetSourceLocation();
+            });
             positionCallback(config.displayed_location);
         }
     }
@@ -67,9 +72,20 @@ define(function(require) {
         window.location.href = config.NAVIGATOR_PATH + "?usetransit=yes&mode=WALK&start=" + latFrom + "," + lonFrom + "&destination=" + latTo + "," + lonTo + "#map-page";
     }
 
+    function unsetSourceLocation() {
+        config.source_location = false;
+        $("#search-options-from").text("Paikanna tai hae lähtöpaikka kirjoittamalla");
+        $("#search-options-button").click(function(e) {
+            e.preventDefault();
+            $("#search-options-button").unbind("click");
+            config.source_location = null;
+        });
+    }
+
     return {'positionCallbackFromGeolocation': positionCallbackFromGeolocation,
             'positionCallbackFromDisplayedLocation': positionCallbackFromDisplayedLocation,
             'positionCallbackFromSourceLocation': positionCallbackFromSourceLocation,
-            'positionCallbackFromDestinationLocation': positionCallbackFromDestinationLocation
+            'positionCallbackFromDestinationLocation': positionCallbackFromDestinationLocation,
+            'unsetSourceLocation': unsetSourceLocation
             };
 })
