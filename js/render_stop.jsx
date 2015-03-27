@@ -14,10 +14,12 @@ define(function(require) {
       this.intervals = [];
     },
     setInterval: function() {
-      this.intervals.push(setInterval.apply(null, arguments));
+      // IE9 needs this window here:
+      this.intervals.push(setInterval.apply(window, arguments));
     },
     componentWillUnmount: function() {
-      this.intervals.map(clearInterval);
+      // IE9 needs this function literal here:
+      this.intervals.map(function(x) {clearInterval(x);});
     }
   };
 
